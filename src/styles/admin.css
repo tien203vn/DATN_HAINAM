@@ -1,0 +1,184 @@
+/* Layout */
+.admin-container {
+  display: flex;
+  min-height: 100vh;
+  background: #f5f6fa;
+  font-family: "Segoe UI", sans-serif;
+}
+
+/* Sidebar */
+.sidebar {
+  width: 240px;
+  background: #111827;
+  color: #fff;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+    justify-content: flex-start; /* Đẩy toàn bộ nội dung lên trên */
+
+}
+
+.sidebar .logo {
+  padding: 20px;
+  font-size: 18px;
+  font-weight: bold;
+  border-bottom: 1px solid #374151;
+}
+
+.sidebar .menu {
+  display: flex;
+  flex-direction: column;
+  padding-top: 4px;
+  margin-top: 0;
+  align-items: flex-start;
+  justify-content: flex-start;
+}
+
+.sidebar .menu a {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 16px;
+  color: #d1d5db;
+  text-decoration: none;
+  border-radius: 6px;
+  transition: 0.2s;
+  
+}
+
+.sidebar .menu a:hover,
+.sidebar .menu a.active {
+  background: #1f2937;
+  color: #fff;
+}
+
+.logout {
+  margin-top: auto;   /* Đẩy xuống dưới */
+  padding: 15px 20px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: #e74c3c;
+  margin-bottom: 80px;
+}
+.logout:hover {
+  background: #c0392b;
+  color: white;
+}
+
+/* Main content */
+.main {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Navbar */
+.navbar {
+  background: #fff;
+  padding: 10px 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.navbar input {
+  width: 250px;
+  padding: 8px 12px;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+}
+
+.profile {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.avatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: #3b82f6;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: white;
+  font-weight: bold;
+}
+
+/* Dashboard */
+.dashboard {
+  padding: 20px;
+}
+
+.dashboard h2 {
+  font-size: 22px;
+  font-weight: bold;
+}
+
+.dashboard .subtitle {
+  color: #6b7280;
+  margin-bottom: 20px;
+}
+
+/* Cards */
+.cards {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.card {
+  background: #fff;
+  padding: 16px;
+  border-radius: 10px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+}
+
+.card h3 {
+  font-size: 22px;
+  margin: 5px 0;
+}
+
+.card .success {
+  color: #16a34a;
+  font-size: 14px;
+}
+
+/* Charts */
+.charts {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+
+.chart-box {
+  background: #fff;
+  border-radius: 10px;
+  padding: 16px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+}
+
+.chart-placeholder {
+  height: 250px;
+  border: 1px dashed #d1d5db;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #9ca3af;
+}
+
+.report-btn {
+  margin-top: 15px;
+  padding: 8px 14px;
+  background: #2563eb;
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+}
