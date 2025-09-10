@@ -5,24 +5,30 @@ import AuthModal from '../components/modals/AuthModal/AuthModal'
 import ScrollTop from '../components/ScrollTop'
 import { useDispatch, useSelector } from 'react-redux'
 import { setShowAuthModal } from '../shared/toolkits/authModalSlice'
-
+import Sidebar from '../components/Sidebar/Sidebar'; // Thêm dòng này
+import { useState } from 'react'; // Thêm dòng này
 export default function Layout() {
-  
-  const { show: showAuthModal } = useSelector(state => state.authModal)
-  const dispatch = useDispatch()
+  const { show: showAuthModal } = useSelector(state => state.authModal);
+  const dispatch = useDispatch();
+
+  // Thêm state quản lý sidebar
+  const [sidebarOpen, setSidebarOpen] = useState(false);
 
   const handleOpenAuthModal = () => {
-    dispatch(setShowAuthModal(true))
-  }
+    dispatch(setShowAuthModal(true));
+  };
 
   const handleCloseAuthModal = () => {
-    dispatch(setShowAuthModal(false))
-  }
+    dispatch(setShowAuthModal(false));
+  };
 
   return (
     <>
       <ScrollTop />
-      <Header onOpenAuthModal={handleOpenAuthModal} />
+      {/* Truyền hàm mở sidebar vào Header */}
+      <Header onOpenAuthModal={handleOpenAuthModal} onOpenSidebar={() => setSidebarOpen(true)} />
+      {/* Truyền state sidebar vào Sidebar */}
+      <Sidebar sidebarOpen={sidebarOpen} setSidebarOpen={setSidebarOpen} />
       <main
         id="main"
         className="main"
@@ -36,5 +42,5 @@ export default function Layout() {
       <Footer />
       <AuthModal show={showAuthModal} onClose={handleCloseAuthModal} />
     </>
-  )
+  );
 }

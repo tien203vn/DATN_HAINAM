@@ -26,59 +26,59 @@ import Products from './pages/pageAdmin/Products'
 import Orders from './pages/pageAdmin/Orders'
 import Users from './pages/pageAdmin/Users'
 import Categories from './pages/pageAdmin/Categories'
+import CustomerDashboard from './components/home/Customer/Dashboard/CustomerDashboard'
 
 function App() {
   return (
-    <>
-      <BrowserRouter>
-        <Routes>
-          {/* App client */}
-          <Route path="/" element={<Layout />}>
-            <Route index element={<Home />} />
-            <Route path="search" element={<ProtectedRoute><Search /></ProtectedRoute>} />
-            <Route path="rent-car" element={<ProtectedRoute><Booking /></ProtectedRoute>} />
-            <Route path="my-booking" element={<ProtectedRoute><MyBooking /></ProtectedRoute>} />
-            <Route path="my-booking/:bookingId" element={<ProtectedRoute><BookingDetails /></ProtectedRoute>} />
-            <Route path="car-booking/:bookingId" element={<ProtectedRoute><CarBookingDetails /></ProtectedRoute>} />
-            <Route path="my-cars" element={<ProtectedRoute><MyCars /></ProtectedRoute>} />
-            <Route path="my-cars/:carId" element={<ProtectedRoute><MyCarDetails /></ProtectedRoute>} />
-            <Route path="add-car" element={<ProtectedRoute><AddACar /></ProtectedRoute>} />
-            <Route path="wallet" element={<ProtectedRoute><MyWallet /></ProtectedRoute>} />
-            <Route path="my-reports" element={<ProtectedRoute><MyReports /></ProtectedRoute>} />
-            <Route path="my-profile" element={<ProtectedRoute><MyProfile /></ProtectedRoute>} />
-            {/* BỎ dấu / để route con render trong Layout */}
-            <Route path="cars/:carId" element={<ProtectedRoute><CarDetails /></ProtectedRoute>} />
-            <Route path="forgot-password" element={<ForgotPassword />} />
-            <Route path="not-found" element={<NotFound />} />
-          </Route>
+    <BrowserRouter>
+      <Routes>
+        {/* App client */}
+        <Route path="/" element={<Layout />}>
+          <Route index element={<Home />} />
+          <Route path="search" element={<ProtectedRoute><Search /></ProtectedRoute>} />
+          <Route path="rent-car" element={<ProtectedRoute><Booking /></ProtectedRoute>} />
+          <Route path="my-booking" element={<ProtectedRoute><MyBooking /></ProtectedRoute>} />
+          <Route path="my-booking/:bookingId" element={<ProtectedRoute><BookingDetails /></ProtectedRoute>} />
+          <Route path="car-booking/:bookingId" element={<ProtectedRoute><CarBookingDetails /></ProtectedRoute>} />
+          <Route path="my-cars" element={<ProtectedRoute><MyCars /></ProtectedRoute>} />
+          <Route path="my-cars/:carId" element={<ProtectedRoute><MyCarDetails /></ProtectedRoute>} />
+          <Route path="add-car" element={<ProtectedRoute><AddACar /></ProtectedRoute>} />
+          <Route path="wallet" element={<ProtectedRoute><MyWallet /></ProtectedRoute>} />
+          <Route path="my-reports" element={<ProtectedRoute><MyReports /></ProtectedRoute>} />
+          <Route path="my-profile" element={<ProtectedRoute><MyProfile /></ProtectedRoute>} />
+          <Route path="/bookings/analysis" element={<ProtectedRoute><CustomerDashboard /></ProtectedRoute>} />
+          {/* BỎ dấu / để route con render trong Layout */}
+          <Route path="cars/:carId" element={<ProtectedRoute><CarDetails /></ProtectedRoute>} />
+          <Route path="forgot-password" element={<ForgotPassword />} />
+          <Route path="not-found" element={<NotFound />} />
+        </Route>
 
-          {/* Admin */}
-          <Route path="/admin" element={<AdminDashboard />}>
-            <Route index element={<Navigate to="products" replace />} />
-            <Route path="products" element={<Products />} />
-            <Route path="orders" element={<Orders />} />
-            <Route path="users" element={<Users />} />
-            <Route path="categories" element={<Categories />} />
-          </Route>
+        {/* Admin */}
+        <Route path="/admin" element={<AdminDashboard />}>
+          <Route index element={<Navigate to="products" replace />} />
+          <Route path="products" element={<Products />} />
+          <Route path="orders" element={<Orders />} />
+          <Route path="users" element={<Users />} />
+          <Route path="categories" element={<Categories />} />
+        </Route>
 
-          {/* Catch all */}
-          <Route path="*" element={<Navigate to="/not-found" replace />} />
-        </Routes>
+        {/* Catch all */}
+        <Route path="*" element={<Navigate to="/not-found" replace />} />
+      </Routes>
 
-        <ToastContainer
-          position="bottom-right"
-          autoClose={3000}
-          hideProgressBar={false}
-          newestOnTop={false}
-          closeOnClick
-          rtl={false}
-          pauseOnFocusLoss
-          draggable
-          pauseOnHover
-          theme="colored"
-        />
-      </BrowserRouter>
-    </>
+      <ToastContainer
+        position="bottom-right"
+        autoClose={3000}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+        theme="colored"
+      />
+    </BrowserRouter>
   )
 }
 

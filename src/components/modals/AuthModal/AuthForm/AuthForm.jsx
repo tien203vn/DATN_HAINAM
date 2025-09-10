@@ -4,7 +4,7 @@ import { FaUser, FaUserPlus } from 'react-icons/fa'
 import { useDispatch } from 'react-redux'
 import { Link, useNavigate } from 'react-router-dom'
 import { toast } from 'react-toastify'
-//import { loginApi, registerApi } from '../../../../shared/apis/authApi'
+import { loginApi, registerApi } from '../../../../shared/apis/authApi'
 import { login } from '../../../../shared/toolkits/authSlice.js'
 
 function AuthForm({ onClose }) {
@@ -22,68 +22,71 @@ function AuthForm({ onClose }) {
     formState: { errors: signUpErrors }
   } = useForm()
 
-  // const handleLogIn = async (data) => {
-  //   loginApi(data).then((data) => {
-  //     const loginData = data.data
+  const handleLogIn = async (data) => {
+    loginApi(data).then((data) => {
+      const loginData = data.data
 
-  //     dispatch(
-  //       login({
-  //         access_token: loginData.token,
-  //         user: loginData.infor
-  //       })
-  //     )
+      dispatch(
+        login({
+          access_token: loginData.token,
+          user: loginData.infor
+        })
+      )
 
-  //     if (loginData.infor?.username) {
-  //       toast.success(`Welcom, ${loginData.infor?.username}`)
-  //     }
+      if (loginData.infor?.username) {
+        toast.success(`Welcom, ${loginData.infor?.username}`)
+      }
 
-  //     onClose()
-  //     navigate('/')
-  //   })
-  // }
- const handleLogIn = () => {
-    onClose();
-    navigate('/admin');
+      onClose()
+      navigate('/')
+    })
   }
-  // const handleSignUp = async (signupData) => {
-  //   registerApi({ ...signupData, acceptTermAndCondition: true }).then(
-  //     (data) => {
-  //       console.log('🚀 ~ handleSignUp ~ data.infor:', data)
-  //       dispatch(
-  //         login({
-  //           access_token: data.data.token,
-  //           user: data.data.infor
-  //         })
-  //       )
-  //       if (data.data.infor?.username) {
-  //         toast.success(`Welcom, ${data.data.infor?.username}`)
-  //       }
-  //       onClose()
-  //     }
-  //   )
-  // }
+
+  const handleSignUp = async (signupData) => {
+    registerApi({ ...signupData, acceptTermAndCondition: true }).then(
+      (data) => {
+        console.log('🚀 ~ handleSignUp ~ data.infor:', data)
+        dispatch(
+          login({
+            access_token: data.data.token,
+            user: data.data.infor
+          })
+        )
+        if (data.data.infor?.username) {
+          toast.success(`Welcom, ${data.data.infor?.username}`)
+        }
+        onClose()
+      }
+    )
+  }
 
   return (
     <div className="container-sm">
       <div className="row p-2">
         <div className="col-md-6 my-3">
           <h5 className="text-center">LOG IN USING YOUR ACCOUNT</h5>
-          <div>
+          <form onSubmit={handleSubmit(handleLogIn)}>
             <div className="mb-3">
               <input
                 type="email"
                 placeholder="Your email address"
                 className="form-control"
-                disabled
+                {...register('email', { required: 'Email is required' })}
               />
+              {errors.email && (
+                <span className="text-danger">{errors.email.message}</span>
+              )}
             </div>
             <div className="mb-3">
               <input
                 placeholder="Your password"
                 className="form-control"
                 type="password"
-                disabled
+                {...register('password', { required: 'Password is required' })}
               />
+              {errors.password && (
+                <span className="text-danger">{errors.password.message}</span>
+              )}
             </div>
             <div className="d-flex flex-column align-items-center">
               <p>
@@ -92,19 +95,18 @@ function AuthForm({ onClose }) {
                 </Link>
               </p>
               <button
-                type="button"
+                type="submit"
                 className="btn btn-primary px-4 d-flex align-items-center gap-2"
-                onClick={handleLogIn}
               >
                 <FaUser />
                 LOG IN
               </button>
             </div>
-          </div>
+          </form>
         </div>
         <div className="col-md-6 my-3">
           <h5 className="text-center">NOT A MEMBER YET?</h5>
-          <form >
+          <form onSubmit={handleSignUpSubmit(handleSignUp)}>
             <div className="mb-3">
               <input
                 type="text"

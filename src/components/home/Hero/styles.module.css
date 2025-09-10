@@ -1,4 +1,4 @@
-.hero {
+/* .hero {
     min-height: calc(100vh - var(--margin-top-header));
     background-size: cover;
     background-position: center;
@@ -38,4 +38,75 @@
     justify-content: center;
     align-items: center;
     border: 2px solid #000;
+} */
+
+
+
+.hero {
+    min-height: 100vh;
+    background-size: cover;
+    background-position: center;
+    background-attachment: fixed;
+}
+
+.mainContent {
+    transition: margin-left 0.3s ease-in-out;
+}
+
+/* Desktop - add margin for sidebar */
+
+
+/* Mobile - no margin, sidebar is overlay */
+@media (max-width: 991.98px) {
+    .mainContent {
+        margin-left: 0;
+    }
+}
+
+.btn_hero {
+    background-color: var(--primary);
+    color: #ffffff;
+    font-size: 16px;
+    padding: 8px 20px;
+    border: none;
+}
+
+.search_form {
+    background-color: var(--primary);
+    border-radius: 7px;
+}
+
+.search_form button {
+    padding: 5px 40px;
+}
+
+.box {
+    padding: 20px 20px;
+    background: #fff;
+    height: 100%;
+    box-shadow: 1px 1px 3px var(--primary);
+    border-radius: 8px;
+    transition: transform 0.2s ease-in-out;
+}
+
+.box:hover {
+    transform: translateY(-2px);
+    box-shadow: 2px 4px 12px rgba(0,0,0,0.1);
+}
+
+.icon_title {
+    font-size: 28px;
+    margin-right: 10px;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border: 2px solid #000;
+    border-radius: 50%;
+}
+
+.box_title h5 {
+    margin-bottom: 0;
+    color: #333;
 }

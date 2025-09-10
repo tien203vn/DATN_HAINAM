@@ -1,5 +1,5 @@
 import { useSelector } from "react-redux";
-import { HeroGuest, HeroCustomer, HeroCarOwner } from "../components/home/Hero";
+import { HeroGuest, HeroCustomer, HeroCarOwnerV2 } from "../components/home/Hero";
 import Location from "../components/home/Loaction";
 import Testimonial from "../components/home/Testimonial";
 import WhyUs from "../components/home/WhyUs";
@@ -29,7 +29,7 @@ export default function Home() {
 
     if(auth.isAuthenticated && userType === 'OWNER') {
         return (
-            <HeroCarOwner />
+            <HeroCarOwnerV2 />
         )
     }
 

@@ -1,20 +1,41 @@
-import clsx from 'clsx'
-import styles from './styles.module.css'
-import { Link } from 'react-router-dom'
-import { useSelector } from 'react-redux'
-import LogoutModal from '../../../components/modals/LogoutModal'
-import placeholderImg from '../../../assets/img-profile.png'
-import { useState } from 'react'
-
-export default function Header({ onOpenAuthModal }) {
-  const { isAuthenticated, user } = useSelector((state) => state.auth)
-  const [show, setShow] = useState(false)
-
+import clsx from "clsx";
+import styles from "./styles.module.css";
+import { Link } from "react-router-dom";
+import { useSelector } from "react-redux";
+import LogoutModal from "../../../components/modals/LogoutModal";
+import placeholderImg from "../../../assets/img-profile.png";
+import { useState } from "react";
+import { Menu } from "lucide-react";
+export default function Header({ onOpenAuthModal, onOpenSidebar }) {
+  const { isAuthenticated, user } = useSelector((state) => state.auth);
+  const [show, setShow] = useState(false);
+  // {/* Mobile Menu Button - Fixed position */}
+  // <button
+  //   onClick={() => setSidebarOpen(true)}
+  //   className={`${styles.mobileMenuBtn} d-lg-none`}
+  // >
+  //   <Menu size={24} />
+  // </button>
   return (
     <>
-      <header id="header" className={clsx('fixed-top', styles.header)}>
-        <div className="container d-flex align-items-center">
-          <h1 className={clsx('me-auto', styles.logo)}>
+      <header id="header" className={clsx("fixed-top", styles.header)}>
+        <div className="d-flex align-items-center" style={{ position: "relative", justifyContent: "space-between"}}>
+          <span
+            className={styles.mobileMenuBtn}
+            onClick={onOpenSidebar}
+            style={{
+              marginRight: "12px",
+              cursor: "pointer",
+              display: "inline-flex",
+              alignItems: "center",
+              position: "absolute",
+              left: "30px",
+            }}
+          >
+            <Menu size={28} color="#fff" />
+          </span>
+
+          <h1 className={clsx("me-auto", styles.logo)}>
             <Link to="/">
               <svg
                 version="1.2"
@@ -32,7 +53,7 @@ export default function Header({ onOpenAuthModal }) {
               <span className="fw-bold ms-2">Rent a car today!</span>
             </Link>
           </h1>
-          <nav id="navbar" className="navbar">
+          <nav id="navbar" className="navbar" style={{ marginRight: "80px" }}>
             <ul>
               <li>
                 <Link to="/" className="nav-link">
@@ -64,7 +85,7 @@ export default function Header({ onOpenAuthModal }) {
                         <span>My Profile</span>
                       </Link>
                     </li>
-                    {user?.userType === 'CUSTOMER' && (
+                    {user?.userType === "CUSTOMER" && (
                       <li>
                         <Link
                           className="dropdown-item d-flex align-items-center"
@@ -74,7 +95,7 @@ export default function Header({ onOpenAuthModal }) {
                         </Link>
                       </li>
                     )}
-                    {user?.userType === 'OWNER' && (
+                    {user?.userType === "OWNER" && (
                       <li>
                         <Link
                           className="dropdown-item d-flex align-items-center"
@@ -92,7 +113,7 @@ export default function Header({ onOpenAuthModal }) {
                         <span>My Wallet</span>
                       </Link>
                     </li>
-                    {user?.userType === 'OWNER' && (
+                    {user?.userType === "OWNER" && (
                       <li>
                         <Link
                           className="dropdown-item d-flex align-items-center"
@@ -135,5 +156,5 @@ export default function Header({ onOpenAuthModal }) {
       </header>
       <LogoutModal show={show} onClose={() => setShow(false)} />
     </>
-  )
+  );
 }

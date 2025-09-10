@@ -1,5 +1,5 @@
 import HeroCustomer from "./HeroCustomer"
 import HeroGuest from "./HeroGuest"
-import HeroCarOwner from "./HeroCarOwner"
+import HeroCarOwnerV2 from "./HeroCarOwnerv2"
 
-export { HeroCarOwner, HeroCustomer, HeroGuest }
+export { HeroCarOwnerV2, HeroCustomer, HeroGuest }

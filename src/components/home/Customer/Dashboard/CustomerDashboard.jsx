@@ -22,13 +22,7 @@ import {
   Legend,
 } from "recharts";
 
-import "../styles/admin.css";
-
-// Import các trang quản lý
-import Products from "../pages/pageAdmin/Products";
-import Orders from "../pages/pageAdmin/Orders";
-import Users from "../pages/pageAdmin/Users";
-import Categories from "../pages/pageAdmin/Categories";
+import "../../../../styles/admin.css";
 
 // Dữ liệu fix cứng cho chart
 const revenueData = [
@@ -49,44 +43,17 @@ const orderStatusData = [
 
 const COLORS = ["#00C49F", "#FFBB28", "#FF8042"];
 
-function AdminDashboard() {
+function CustomerDashboard() {
   return (
     <div className="admin-container">
       {/* Sidebar */}
-      <aside className="sidebar">
-        <div className="logo">Tiến Nổ</div>
-        <nav className="menu">
-          <NavLink to="." end>
-            <FaTachometerAlt /> Dashboard
-          </NavLink>
-          <NavLink to="products">
-            <FaBox /> Sản phẩm
-          </NavLink>
-          <NavLink to="orders">
-            <FaShoppingCart /> Đơn hàng
-          </NavLink>
-          <NavLink to="users">
-            <FaUsers /> Người dùng
-          </NavLink>
-          <NavLink to="categories">
-            <FaList /> Danh mục
-          </NavLink>
-        </nav>
-        <div className="logout">
-          <FaSignOutAlt /> Đăng xuất
-        </div>
-      </aside>
-
+      
       {/* Main Content */}
       <div className="main">
         {/* Navbar */}
-        <header className="navbar" style ={{ padding: "20px" }}>
+        <header className="navbar" style ={{ padding: "20px", display: "flex", alignItems: "end", flexDirection: "row-reverse" }}>
           <input type="text" placeholder="Tìm kiếm..." />
-          <div className="profile">
-            <span className="bell">🔔</span>
-            <div className="avatar">A</div>
-            <span>Admin</span>
-          </div>
+          
         </header>
 
         {/* Routes */}
@@ -168,14 +135,10 @@ function AdminDashboard() {
               </div>
             }
           />
-          <Route path="/products" element={<Products />} />
-          <Route path="/orders" element={<Orders />} />
-          <Route path="/users" element={<Users />} />
-          <Route path="/categories" element={<Categories />} />
         </Routes>
       </div>
     </div>
   );
 }
 
-export default AdminDashboard;
+export default CustomerDashboard;
