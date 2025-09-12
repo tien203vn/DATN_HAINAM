@@ -49,13 +49,13 @@ function CarBookingDetails() {
 
   return (
     <>
-      <BreadCrumb
+      {/* <BreadCrumb
         links={[
           { path: '/', name: 'Home' },
           { path: '/my-booking', name: 'My Booking' },
           { name: 'Booking Details' }
         ]}
-      />
+      /> */}
       <div className="container">
         <h2 className="mb-3">Booking Details</h2>
         <div className="row mb-3">

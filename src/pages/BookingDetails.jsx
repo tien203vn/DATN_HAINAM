@@ -200,7 +200,7 @@ function BookingDetails() {
                   View details
                 </Link>
                 <div className="d-flex flex-column">
-                  {bookingDetails?.status === 'CONFIRMED' && (
+                  {/* {bookingDetails?.status === 'CONFIRMED' && (
                     <button
                       type="button"
                       className="btn btn-primary w-100 mb-3"
@@ -208,7 +208,7 @@ function BookingDetails() {
                     >
                       Confirm pickup
                     </button>
-                  )}
+                  )} */}
                   {bookingDetails?.status === 'IN_PROGRESS' && (
                     <button
                       type="button"

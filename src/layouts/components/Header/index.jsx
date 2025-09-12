@@ -20,20 +20,22 @@ export default function Header({ onOpenAuthModal, onOpenSidebar }) {
     <>
       <header id="header" className={clsx("fixed-top", styles.header)}>
         <div className="d-flex align-items-center" style={{ position: "relative", justifyContent: "space-between"}}>
-          <span
-            className={styles.mobileMenuBtn}
-            onClick={onOpenSidebar}
-            style={{
-              marginRight: "12px",
-              cursor: "pointer",
-              display: "inline-flex",
-              alignItems: "center",
-              position: "absolute",
-              left: "30px",
-            }}
-          >
-            <Menu size={28} color="#fff" />
-          </span>
+          {isAuthenticated && user?.userType === "OWNER" && (
+            <span
+              className={styles.mobileMenuBtn}
+              onClick={onOpenSidebar}
+              style={{
+                marginRight: "12px",
+                cursor: "pointer",
+                display: "inline-flex",
+                alignItems: "center",
+                position: "absolute",
+                left: "30px",
+              }}
+            >
+              <Menu size={28} color="#fff" />
+            </span>
+          )}
 
           <h1 className={clsx("me-auto", styles.logo)}>
             <Link to="/">

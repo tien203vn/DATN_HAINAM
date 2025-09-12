@@ -13,6 +13,26 @@ export const getCarsByOwner = async ({
   return res.data
 }
 
+export const getCarsActiveByOwner = async ({
+  page = 1,
+  size = 5,
+  sort = 'id:desc'
+}) => {
+  const searchParams = generateMetaSearchParams(page, size, sort)
+  const res = await axiosInstance.get(`car/my-car-active?${searchParams}`)
+  return res.data
+}
+
+export const getCarsInActiveByOwner = async ({
+  page = 1,
+  size = 5,
+  sort = 'id:desc'
+}) => {
+  const searchParams = generateMetaSearchParams(page, size, sort)
+  const res = await axiosInstance.get(`car/my-car-in-active?${searchParams}`)
+  return res.data
+}
+
 export const getCarsById = async (carId) => {
   const res = await axiosInstance.get(`car/${carId}`)
   return res.data

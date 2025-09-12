@@ -43,8 +43,8 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }) => {
       submenu: [
         { label: "My Cars", path: "/my-cars" },
         { label: "Add New Car", path: "/add-car" },
-        { label: "Xe đang cho thuê", path: "/vehicles/maintenance" },
-        { label: "Xe trống", path: "/vehicles/status" },
+        { label: "Xe đang chờ duyệt", path: "/my-cars-active" }, //lấy ra xe đang chờ duyệt thuê
+        { label: "Xe không hoạt động", path: "/my-cars-not-active" }, //lấy ra xe đã hoàn thành và đang chờ nhà xe kiểm tra
       ],
     },
     {
@@ -52,7 +52,7 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }) => {
       label: "Booking Management",
       icon: Calendar,
       submenu: [
-        { label: "Tất cả đơn hàng", path: "/bookings/list" },
+        { label: "Tất cả đơn hàng", path: "/bookings/order" },
         { label: "Phân tích", path: "/bookings/analysis" },
       ],
     },
@@ -61,7 +61,7 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }) => {
       label: "Customer Management",
       icon: Users,
       submenu: [
-        { label: "All Customers", path: "/customers/list" },
+        { label: "All Customers", path: "/user-booking" },
         { label: "Khách đang thuê", path: "/customers/vip" },
         { label: "Customer Reviews", path: "/customers/feedback" },
       ],
