@@ -6,11 +6,14 @@ import { API_URL } from '../constants/apiUrl'
 export const getCarsByOwner = async ({
   page = 1,
   size = 5,
-  sort = 'id:desc'
+  sort = 'id:desc',
+  keyword // thêm keyword vào destructuring
 }) => {
-  const searchParams = generateMetaSearchParams(page, size, sort)
-  const res = await axiosInstance.get(`car/my-car?${searchParams}`)
-  return res.data
+  const searchParams = generateMetaSearchParams(page, size, sort);
+  // Thêm keyword vào query string nếu có
+  const keywordParam = keyword !== undefined ? `&keyword=${keyword}` : '';
+  const res = await axiosInstance.get(`car/my-car?${searchParams}${keywordParam}`);
+  return res.data;
 }
 
 export const getCarsActiveByOwner = async ({

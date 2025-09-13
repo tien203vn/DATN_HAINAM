@@ -5,7 +5,7 @@ import CustomPagination from '../components/paginations/CustomPagination'
 import { getCarsByOwner } from '../shared/apis/carApi'
 import EmptyState from '../components/EmptyState'
 import LoadingState from '../components/LoadingState'
-import { Link } from 'react-router-dom'
+import { Link, useLocation, useNavigate } from 'react-router-dom'
 
 export default function MyCars() {
   const [cars, setCars] = useState([])
@@ -14,13 +14,61 @@ export default function MyCars() {
   const [total, setTotal] = useState(1)
   const [sortType, setSortType] = useState('id:desc')
   const [loading, setLoading] = useState(true)
+  const [availability, setAvailability] = useState('')
+
+  const location = useLocation();
+  const navigate = useNavigate();
+  const queryParams = new URLSearchParams(location.search);
+
+  // Lấy giá trị từ URL khi mount
+  useEffect(() => {
+    const urlKeyword = queryParams.get('keyword');
+    let urlAvailability = '';
+    if (urlKeyword === '1') urlAvailability = 'available';
+    else if (urlKeyword === '0') urlAvailability = 'unavailable';
+    const urlSortType = queryParams.get('sort') || 'id:desc';
+    setAvailability(urlAvailability);
+    setSortType(urlSortType);
+    // eslint-disable-next-line
+  }, [location.search]);
+
+  // Khi thay đổi filter/sort thì cập nhật URL
+  const handleAvailabilityChange = (e) => {
+    const value = e.target.value;
+    setAvailability(value);
+    if (value === "available") {
+      queryParams.set('keyword', '1');
+    } else if (value === "unavailable") {
+      queryParams.set('keyword', '0');
+    } else {
+      queryParams.delete('keyword'); // Xóa param khi chọn tất cả xe
+    }
+    navigate(`?${queryParams.toString()}`);
+  };
+
+  const handleSortTypeChange = (e) => {
+    const value = e.target.value;
+    setSortType(value);
+    queryParams.set('sort', value);
+    navigate(`?${queryParams.toString()}`);
+  };
 
   const fetchData = useCallback(() => {
+    // Xử lý keyword cho API
+    let keyword;
+    if (availability === "available") keyword = 1;
+    else if (availability === "unavailable") keyword = 0;
+
+    // Tách sortType thành sortField và sortDir
+    const [sortField, sortDir] = sortType.split(':');
+
     setLoading(true)
     getCarsByOwner({
-      page: currentPage,
-      size: perPage,
-      sort: sortType
+      currentPage: currentPage - 1, // backend thường bắt đầu từ 0
+      pageSize: perPage,
+      sortField,
+      sortDir,
+      ...(keyword !== undefined ? { keyword } : {})
     })
       .then((data) => {
         setCars(data.data)
@@ -32,7 +80,7 @@ export default function MyCars() {
       .finally(() => {
         setLoading(false)
       })
-  }, [currentPage, perPage, sortType, total])
+  }, [currentPage, perPage, sortType, total, availability])
 
   useEffect(() => {
     fetchData()
@@ -65,17 +113,31 @@ export default function MyCars() {
               Add car
             </Link>
           </div>
-          <div className="col-md-6 mb-3 d-flex">
+          <div className="col-md-6 mb-3 d-flex justify-content-end">
+            {/* Select sort */}
             <select
-              className="form-select w-content ms-md-auto"
+              className="form-select w-content"
               aria-label="Sort cars"
               value={sortType}
-              onChange={(e) => setSortType(e.target.value)}
+              onChange={handleSortTypeChange}
+              style={{ width: 180 }}
             >
               <option value="id:desc">Newest to Lastest</option>
               <option value="id:asc">Lastest to Newest</option>
               <option value="basePrice:desc">Price High to Low</option>
               <option value="basePrice:asc">Price Low to High</option>
+            </select>
+            {/* Select availability bên cạnh */}
+            <select
+              className="form-select w-content ms-3"
+              aria-label="Filter availability"
+              value={availability}
+              onChange={handleAvailabilityChange}
+              style={{ width: 160 }}
+            >
+              <option value="">Tất cả xe</option>
+              <option value="available">Xe có sẵn</option>
+              <option value="unavailable">Xe không có sẵn</option>
             </select>
           </div>
         </div>

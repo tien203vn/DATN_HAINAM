@@ -1,19 +1,49 @@
 import React, { useEffect, useState } from "react";
-import { Table, Tag, Image, Space } from "antd";
+import { Table, Tag, Image, Space, Input, Select, DatePicker, Button, Row, Col } from "antd";
 import { getOwnerBookingListApi } from "../../../../shared/apis/ownerBookingApi";
 import { LoadingOutlined, EyeOutlined } from "@ant-design/icons";
 import { useNavigate } from "react-router-dom";
+import dayjs from "dayjs";
+
+const { RangePicker } = DatePicker;
+
+const statusOptions = [
+  { value: "", label: "Tất cả" },
+  { value: "PENDING_DEPOSIT", label: "Chờ đặt cọc" },
+  { value: "COMPLETED", label: "Hoàn thành" },
+  { value: "CANCELLED", label: "Đã hủy" },
+];
 
 const CustomerOrders = () => {
   const [loading, setLoading] = useState(true);
   const [bookings, setBookings] = useState([]);
   const [meta, setMeta] = useState({});
   const [error, setError] = useState("");
+  const [currentPage, setCurrentPage] = useState(0); // Thêm state quản lý trang
+  const [carName, setCarName] = useState("");
+  const [bookingStatus, setBookingStatus] = useState("");
+  const [dateRange, setDateRange] = useState([null, null]);
+  const [filters, setFilters] = useState({
+    carName: "",
+    bookingStatus: "",
+    startDateTime: null,
+    endDateTime: null,
+  });
   const navigate = useNavigate();
 
-  useEffect(() => {
+  const fetchBookings = (page = 0, f = filters) => {
     setLoading(true);
-    getOwnerBookingListApi()
+    getOwnerBookingListApi({
+      currentPage: page,
+      carName: f.carName,
+      bookingStatus: f.bookingStatus,
+      startDateTime: f.startDateTime
+        ? dayjs(f.startDateTime).format("YYYY-MM-DD HH:mm:ss")
+        : undefined,
+      endDateTime: f.endDateTime
+        ? dayjs(f.endDateTime).format("YYYY-MM-DD HH:mm:ss")
+        : undefined,
+    })
       .then((res) => {
         setBookings(res.data || []);
         setMeta(res.meta || {});
@@ -22,7 +52,22 @@ const CustomerOrders = () => {
         setError("Không thể tải dữ liệu booking!");
       })
       .finally(() => setLoading(false));
-  }, []);
+  };
+
+  useEffect(() => {
+    fetchBookings(currentPage, filters);
+    // eslint-disable-next-line
+  }, [currentPage, filters]);
+
+  const handleSearch = () => {
+    setCurrentPage(0);
+    setFilters({
+      carName,
+      bookingStatus,
+      startDateTime: dateRange[0],
+      endDateTime: dateRange[1],
+    });
+  };
 
   const columns = [
     {
@@ -108,6 +153,43 @@ const CustomerOrders = () => {
     <div style={{ padding: "20px" }}>
       <h2 style={{ fontSize: "20px", fontWeight: "bold" }}>Quản lý booking</h2>
       <p style={{ color: "#888" }}>Quản lý và theo dõi trạng thái các booking của bạn</p>
+      {/* Bộ lọc tìm kiếm */}
+      <div style={{ marginBottom: 16, background: "#f7f7f7", padding: 12, borderRadius: 8 }}>
+        <Row gutter={16}>
+          <Col>
+            <Input
+              placeholder="Tên xe"
+              value={carName}
+              onChange={e => setCarName(e.target.value)}
+              style={{ width: 180 }}
+              allowClear
+            />
+          </Col>
+          <Col>
+            <Select
+              placeholder="Trạng thái"
+              value={bookingStatus}
+              onChange={v => setBookingStatus(v)}
+              style={{ width: 150 }}
+              options={statusOptions}
+              allowClear
+            />
+          </Col>
+          <Col>
+            <RangePicker
+              showTime
+              format="YYYY-MM-DD HH:mm"
+              value={dateRange}
+              onChange={dates => setDateRange(dates)}
+              style={{ width: 280 }}
+              placeholder={["Thời gian bắt đầu", "Thời gian kết thúc"]}
+            />
+          </Col>
+          <Col>
+            <Button type="primary" onClick={handleSearch}>Tìm kiếm</Button>
+          </Col>
+        </Row>
+      </div>
       {error && <div style={{ color: "red" }}>{error}</div>}
       {loading ? (
         <div style={{ textAlign: "center", padding: "40px" }}>
@@ -126,10 +208,14 @@ const CustomerOrders = () => {
           <Table
             dataSource={bookings.map((b) => ({ ...b, key: b.bookingId }))}
             columns={columns}
-            pagination={{ pageSize: meta?.pageSize || 5 }}
+            pagination={{
+              pageSize: meta?.pageSize || 5,
+              current: currentPage + 1,
+              total: meta?.totalItems,
+              onChange: (page) => setCurrentPage(page - 1),
+            }}
             scroll={{ x: true }}
           />
-          {/* Modal chi tiết booking đã được thay bằng chuyển trang */}
         </>
       )}
     </div>
