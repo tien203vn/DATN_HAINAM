@@ -7,6 +7,7 @@ import { useDispatch, useSelector } from 'react-redux'
 import { setShowAuthModal } from '../shared/toolkits/authModalSlice'
 import Sidebar from '../components/Sidebar/Sidebar'; // Thêm dòng này
 import { useState } from 'react'; // Thêm dòng này
+import GeminiChatBox from '../components/GeminiChatBox';
 export default function Layout() {
   const { show: showAuthModal } = useSelector(state => state.authModal);
   const dispatch = useDispatch();
@@ -39,6 +40,8 @@ export default function Layout() {
       >
         <Outlet />
       </main>
+      {/* Box chat Gemini AI cố định góc phải dưới */}
+      <GeminiChatBox />
       <Footer />
       <AuthModal show={showAuthModal} onClose={handleCloseAuthModal} />
     </>
