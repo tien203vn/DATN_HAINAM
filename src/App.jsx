@@ -21,6 +21,7 @@ import CarBookingDetails from './pages/CarBookingDetails'
 import ProtectedRoute from './router/ProtectedRoute'
 import OwnerBookingDetailPage from './components/home/Customer/Booking/OwnerBookingDetailPage'
 import UsersBooking from './components/home/Customer/User/UsersBooking'
+import CarConfirmActive from './components/home/Customer/Booking/CarConfirmActive'
 
 // Admin
 import AdminDashboard from './admin/AdminDashboard'
@@ -50,6 +51,7 @@ function App() {
           <Route path="my-cars-not-active" element={<ProtectedRoute><MyCarsNotBooking /></ProtectedRoute>} />
           <Route path="my-cars/:carId" element={<ProtectedRoute><MyCarDetails /></ProtectedRoute>} />
           <Route path="add-car" element={<ProtectedRoute><AddACar /></ProtectedRoute>} />
+          <Route path="car-confirm" element={<ProtectedRoute><CarConfirmActive /></ProtectedRoute>} />
           <Route path="wallet" element={<ProtectedRoute><MyWallet /></ProtectedRoute>} />
           <Route path="my-reports" element={<ProtectedRoute><MyReports /></ProtectedRoute>} />
           <Route path="my-profile" element={<ProtectedRoute><MyProfile /></ProtectedRoute>} />

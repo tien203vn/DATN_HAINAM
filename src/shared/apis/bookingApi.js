@@ -1,5 +1,6 @@
 import { generateMetaSearchParams } from '../utils'
 import axiosInstance from '../utils/authorizedAxios'
+import axios from 'axios'
 
 export const getBookingDetailsApi = async (bookingId) => {
   const res = await axiosInstance.get(`booking/${bookingId}`)
@@ -68,3 +69,13 @@ export const getCarBookingApi = async (
   )
   return res.data
 }
+
+
+export const ownerCancelBookingApi = async (id) => {
+  const res = await axiosInstance.patch(`booking/owner/cancel-booking/${id}`)
+  return res.data
+}
+
+export const confirmReceivedCarApi = async (bookingId) => {
+  return axiosInstance.patch(`booking/confirm-booking/${bookingId}`);
+};

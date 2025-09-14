@@ -42,9 +42,9 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }) => {
       icon: Car,
       submenu: [
         { label: "My Cars", path: "/my-cars" },
-        { label: "Add New Car", path: "/add-car" },
-        { label: "Xe đang chờ duyệt", path: "/my-cars-active" }, //lấy ra xe đang chờ duyệt thuê
-        { label: "Xe không hoạt động", path: "/my-cars-not-active" }, //lấy ra xe đã hoàn thành và đang chờ nhà xe kiểm tra
+        // { label: "Xe trống", path: "/add-car" },
+        { label: "Xe đang chờ xác nhận", path: "/car-confirm" }, //lấy ra xe đang chờ duyệt thuê
+        { label: "Xe bảo trì", path: "/my-cars-not-active" }, //lấy ra xe đã hoàn thành và đang chờ nhà xe kiểm tra
       ],
     },
     {

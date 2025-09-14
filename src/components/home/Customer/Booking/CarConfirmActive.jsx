@@ -9,13 +9,12 @@ const { RangePicker } = DatePicker;
 
 const statusOptions = [
   { value: "", label: "Tất cả" },
-  { value: "CONFIRMED", label: "Chờ xác nhận" },
+  { value: "PENDING_DEPOSIT", label: "Chờ đặt cọc" },
   { value: "COMPLETED", label: "Hoàn thành" },
   { value: "CANCELLED", label: "Đã hủy" },
-  { value: "PICK_UP", label: "Đã lấy xe" },
 ];
 
-const CustomerOrders = () => {
+const CarConfirmActive = () => {
   const [loading, setLoading] = useState(true);
   const [bookings, setBookings] = useState([]);
   const [meta, setMeta] = useState({});
@@ -223,4 +222,4 @@ const CustomerOrders = () => {
   );
 };
 
-export default CustomerOrders;
+export default CarConfirmActive;

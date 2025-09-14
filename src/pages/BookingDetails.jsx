@@ -200,27 +200,7 @@ function BookingDetails() {
                   View details
                 </Link>
                 <div className="d-flex flex-column">
-                  {/* {bookingDetails?.status === 'CONFIRMED' && (
-                    <button
-                      type="button"
-                      className="btn btn-primary w-100 mb-3"
-                      onClick={() => setShowPickupModal(true)}
-                    >
-                      Confirm pickup
-                    </button>
-                  )} */}
-                  {bookingDetails?.status === 'IN_PROGRESS' && (
-                    <button
-                      type="button"
-                      className="btn btn-primary w-100 mb-3"
-                      onClick={() => setShowReturnCarModal(true)}
-                    >
-                      Return car
-                    </button>
-                  )}
-                  {['PENDING_DEPOSIT', 'CONFIRMED', 'PICK_UP'].includes(
-                    bookingDetails?.status
-                  ) && (
+                  {bookingDetails?.status === 'CONFIRMED' && (
                     <button
                       type="button"
                       className="btn btn-danger w-100 mb-3"
@@ -229,6 +209,24 @@ function BookingDetails() {
                       Cancel booking
                     </button>
                   )}
+                  {/* {bookingDetails?.status === 'IN_PROGRESS' && (
+                    <button
+                      type="button"
+                      className="btn btn-primary w-100 mb-3"
+                      onClick={() => setShowReturnCarModal(true)}
+                    >
+                      Return car
+                    </button>
+                  )} */}
+                  {/* {['PENDING_DEPOSIT', 'PICK_UP'].includes(bookingDetails?.status) && (
+                    <button
+                      type="button"
+                      className="btn btn-danger w-100 mb-3"
+                      onClick={() => setShowCancelModal(true)}
+                    >
+                      Cancel booking
+                    </button>
+                  )} */}
                 </div>
               </div>
             </div>
@@ -256,14 +254,14 @@ function BookingDetails() {
                             <InfoCard info={driverInfor} />
                           </>
                         )}
-                        <div>
+                        {/* <div>
                           <button
                             className="btn btn-success ms-4"
                             onClick={toggleOpenUpdateForm}
                           >
                             Edit
                           </button>
-                        </div>
+                        </div> */}
                       </div>
                     </>
                   ) : (
