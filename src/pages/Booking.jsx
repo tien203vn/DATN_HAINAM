@@ -115,8 +115,8 @@ export default function Booking() {
     const hoursDiff = diffMs > 0 ? diffMs / 60 : 0;
 
     // Tính tổng tiền và đặt cọc
-    const total = (car?.basePrice ?? 0) * (hoursDiff );
-    const deposit = car?.deposit;;
+    const total = (car?.basePrice ?? 0) * (hoursDiff )/24;
+    const deposit = car?.deposit;
 
     // Giới hạn ngày bắt đầu: chỉ được chọn hôm nay hoặc ngày hôm sau
     const disabledStartDate = (d) => {
