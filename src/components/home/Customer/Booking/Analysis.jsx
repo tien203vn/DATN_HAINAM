@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { Link, Routes, Route, NavLink } from "react-router-dom";
 import {
   LineChart,
@@ -13,20 +13,11 @@ import {
   Cell,
   Legend,
 } from "recharts";
+import axiosInstance from "../../../../shared/utils/authorizedAxios";
 
 import "../../../../styles/admin.css";
 
 // Dữ liệu fix cứng cho chart
-const revenueData = [
-  { month: "Jan", revenue: 4000000 },
-  { month: "Feb", revenue: 3000000 },
-  { month: "Mar", revenue: 2000000 },
-  { month: "Apr", revenue: 2780000 },
-  { month: "May", revenue: 1890000 },
-  { month: "Jun", revenue: 2390000 },
-  { month: "Jul", revenue: 3490000 },
-];
-
 const orderStatusData = [
   { name: "Hoàn thành", value: 7 },
   { name: "Đang xử lý", value: 2 },
@@ -36,6 +27,24 @@ const orderStatusData = [
 const COLORS = ["#00C49F", "#FFBB28", "#FF8042"];
 
 function Analysis() {
+  const currentMonth = new Date().getMonth() + 1;
+  const [selectedMonth, setSelectedMonth] = useState(currentMonth);
+  const [revenueData, setRevenueData] = useState([]);
+  const [totalRevenue, setTotalRevenue] = useState(0);
+
+  useEffect(() => {
+    axiosInstance.get("user/revenue")
+      .then(res => {
+        // res.data = [{month: 1, revenue: 1000}, ...]
+        const data = res.data || [];
+        setRevenueData(data.map(item => ({
+          month: `Tháng ${item.month}`,
+          revenue: item.revenue
+        })));
+        setTotalRevenue(data.reduce((sum, item) => sum + item.revenue, 0));
+      });
+  }, []);
+
   return (
     <div className="admin-container">
       {/* Sidebar */}
@@ -44,8 +53,16 @@ function Analysis() {
       <div className="main">
         {/* Navbar */}
         <header className="navbar" style ={{ padding: "20px", display: "flex", alignItems: "end", flexDirection: "row-reverse" }}>
-          <input type="text" placeholder="Tìm kiếm..." />
-          
+          <select
+            style={{ width: 140 }}
+            value={selectedMonth}
+            onChange={e => setSelectedMonth(Number(e.target.value))}
+          >
+            <option value="">Chọn tháng</option>
+            {[...Array(12)].map((_, i) => (
+              <option key={i+1} value={i+1}>{`Tháng ${i+1}`}</option>
+            ))}
+          </select>
         </header>
 
         {/* Routes */}
@@ -61,8 +78,8 @@ function Analysis() {
                 <div className="cards">
                   <div className="card">
                     <p>Tổng doanh thu</p>
-                    <h3>4.990.000 ₫</h3>
-                    <span className="success">↑ 0% so với tháng trước</span>
+                    <h3>{totalRevenue.toLocaleString("vi-VN")} ₫</h3>
+                    <span className="success">Doanh thu 12 tháng gần nhất</span>
                   </div>
                   <div className="card">
                     <p>Tổng đơn hàng</p>
@@ -79,6 +96,27 @@ function Analysis() {
                     <h3>3</h3>
                     <span className="success">↑ 0% so với tháng trước</span>
                   </div>
+                </div>
+
+                {/* Bảng doanh thu từng tháng */}
+                <div className="mb-4">
+                  <h4>Doanh thu từng tháng</h4>
+                  <table className="table table-bordered" style={{ maxWidth: 400 }}>
+                    <thead>
+                      <tr>
+                        <th>Tháng</th>
+                        <th>Doanh thu (₫)</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {revenueData.map((item, idx) => (
+                        <tr key={idx}>
+                          <td>{item.month}</td>
+                          <td>{item.revenue.toLocaleString("vi-VN")}</td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
                 </div>
 
                 {/* Charts */}

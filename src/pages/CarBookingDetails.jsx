@@ -16,7 +16,7 @@ import {
 } from '../shared/apis/bookingApi'
 import { MULTIPLIED_AMOUNT } from '../shared/constants'
 import { currencyFormat, formatDateTime } from '../shared/utils'
-import axios from 'axios'
+import axiosInstance from '../shared/utils/authorizedAxios'
 import { useSelector } from 'react-redux'
 import { Modal, Input, Form } from 'antd'
 
@@ -87,7 +87,7 @@ function CarBookingDetails() {
   // Xử lý xác nhận hoàn thành
   const handleCompleteBooking = async () => {
     try {
-      const res = await axios.post(`/api/v1/booking/complete/${bookingId}`, {
+      const res = await axiosInstance.post(`booking/complete/${bookingId}`, {
         note: completeNote,
         lateMinutes: completeLateMinutes,
         compensationFee: completeCompensation
@@ -234,7 +234,12 @@ function CarBookingDetails() {
                       <button
                         type="button"
                         className="btn btn-warning w-100 mb-2"
-                        onClick={() => setShowCompleteModal(true)}
+                        onClick={() => {
+                          setCompleteNote('');
+                          setCompleteLateMinutes(0);
+                          setCompleteCompensation(0);
+                          setShowCompleteModal(true);
+                        }}
                       >
                         Hoàn thành
                       </button>

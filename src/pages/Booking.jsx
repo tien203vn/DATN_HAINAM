@@ -13,6 +13,8 @@ import { getCarsById } from "../shared/apis/carApi";
 import RequestError from "./error/RequestError";
 import { addBookingApi } from "../shared/apis/bookingApi";
 import { MULTIPLIED_AMOUNT } from '../shared/constants'
+import { DatePicker, TimePicker, InputNumber, message } from "antd";
+import dayjs from "dayjs";
 
 export default function Booking() {
 
@@ -84,7 +86,41 @@ export default function Booking() {
         navigate('/')
     }
 
-    const hoursDiff = (convertToLocalDateTime(searchParams.get('eD'), searchParams.get('eT')) - convertToLocalDateTime(searchParams.get('sD'), searchParams.get('sT'))) / (1000 * 3600)
+    // State cho ngày/giờ thuê
+    const [startDate, setStartDate] = useState(dayjs());
+    const [startTime, setStartTime] = useState(dayjs().hour(8).minute(0));
+    const [endDate, setEndDate] = useState(dayjs().add(1, "day"));
+    const [endTime, setEndTime] = useState(dayjs().hour(8).minute(0));
+
+    // Tính số ngày thuê (tối đa 7 ngày)
+    const maxDays = 7;
+    const selectedStart = startDate.hour(startTime.hour()).minute(startTime.minute());
+    const selectedEnd = endDate.hour(endTime.hour()).minute(endTime.minute());
+    const diffMs = selectedEnd.diff(selectedStart, "minute");
+    const hoursDiff = diffMs > 0 ? diffMs / 60 : 0;
+
+    // Giới hạn ngày bắt đầu: chỉ được chọn hôm nay hoặc ngày hôm sau
+    const disabledStartDate = (d) => {
+        const today = dayjs().startOf("day");
+        const tomorrow = today.add(1, "day");
+        return d < today || d > tomorrow;
+    };
+
+    // Giới hạn ngày kết thúc: chỉ được chọn trong vòng 7 ngày kể từ ngày bắt đầu
+    const disabledEndDate = (d) => {
+        const minEnd = startDate;
+        const maxEnd = startDate.add(maxDays, "day");
+        return d < minEnd || d > maxEnd;
+    };
+
+    // Reset endDate nếu vượt quá 7 ngày
+    useEffect(() => {
+        const maxEnd = startDate.add(maxDays, "day");
+        if (endDate.isAfter(maxEnd)) {
+            setEndDate(maxEnd);
+            setEndTime(startTime);
+        }
+    }, [startDate, endDate, startTime]);
 
     return (
         <>
@@ -102,16 +138,45 @@ export default function Booking() {
                 <div className="rent-car-booking-detail bg-rt-primary text-white">
                     <div className="container py-3">
                         <div className="d-flex align-items-center">
-                            <h5>Booking Deatils</h5>
+                            <h5>Booking Details</h5>
                             <Link to="/search" className="d-flex align-items-center ms-auto text-white">
                                 <FiEdit className="fs-4 me-1"/>
-                                Change deatils
+                                Change details
                             </Link>
                         </div>
                         <ul className="text-white fs-5.5 fw-semibold lh-lg">
-                            <li>Pick-up location: { searchParams.get('location') }</li>
-                            <li>Pick-up date and time: { formatDate(searchParams.get('sD')) } - { searchParams.get('sT') }</li>
-                            <li>Return date and time: { formatDate(searchParams.get('eD')) } - { searchParams.get('eT') }</li>
+                            <li>
+                                Pick-up date and time:
+                                <DatePicker
+                                    value={startDate}
+                                    onChange={setStartDate}
+                                    style={{ marginLeft: 8, marginRight: 8 }}
+                                    disabledDate={disabledStartDate}
+                                />
+                                <TimePicker
+                                    value={startTime}
+                                    onChange={setStartTime}
+                                    format="HH:mm"
+                                    minuteStep={15}
+                                    style={{ marginRight: 8 }}
+                                />
+                            </li>
+                            <li>
+                                Return date and time:
+                                <DatePicker
+                                    value={endDate}
+                                    onChange={setEndDate}
+                                    style={{ marginLeft: 8, marginRight: 8 }}
+                                    disabledDate={disabledEndDate}
+                                />
+                                <TimePicker
+                                    value={endTime}
+                                    onChange={setEndTime}
+                                    format="HH:mm"
+                                    minuteStep={15}
+                                    style={{ marginRight: 8 }}
+                                />
+                            </li>
                         </ul>
                     </div>
                 </div>

@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { useParams } from 'react-router-dom'
+import { useParams, useNavigate } from 'react-router-dom'
 import { toast } from 'react-toastify'
 import BreadCrumb from '../components/BreadCrumb'
 import ImageSlider from '../components/carousels/ImageSlider'
@@ -22,10 +22,12 @@ export default function MyCarDetails() {
   const [loading, setLoading] = useState(true)
   const [showStopRentingModal, setStopRentingModal] = useState(false)
   const [showReRentingModal, setReRentingModal] = useState(false)
+  const navigate = useNavigate();
   const handleStopRentingCar = async () => {
     const { message } = await stopRentingApi(carId)
     toast.success(message)
     setStopRentingModal(false)
+    navigate('/my-cars-not-active')
   }
 
   useEffect(() => {
@@ -45,7 +47,7 @@ export default function MyCarDetails() {
 
   return (
     <>
-      <BreadCrumb
+      {/* <BreadCrumb
         links={[
           {
             path: '/',
@@ -59,7 +61,7 @@ export default function MyCarDetails() {
             name: 'Edit Details'
           }
         ]}
-      />
+      /> */}
       <div className="container">
         <div className="row">
           <div className="col-12">

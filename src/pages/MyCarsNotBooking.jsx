@@ -61,9 +61,9 @@ export default function MyCarsNotBooking() {
         <h1 className="mb-4">My Cars</h1>
         <div className="row d-flex align-items-center justify-content-between">
           <div className="col-md-6 mb-3 d-flex">
-            <Link to="/add-car" className="btn btn-primary">
+            {/* <Link to="/add-car" className="btn btn-primary">
               Add car
-            </Link>
+            </Link> */}
           </div>
           <div className="col-md-6 mb-3 d-flex">
             <select
