@@ -31,36 +31,71 @@ function Analysis() {
   const [selectedMonth, setSelectedMonth] = useState(currentMonth);
   const [revenueData, setRevenueData] = useState([]);
   const [totalRevenue, setTotalRevenue] = useState(0);
+  const [monthlyOrders, setMonthlyOrders] = useState({});
 
   useEffect(() => {
-    axiosInstance.get("user/revenue")
-      .then(res => {
-        // res.data = [{month: 1, revenue: 1000}, ...]
-        const data = res.data || [];
-        setRevenueData(data.map(item => ({
+    axiosInstance.get("user/revenue").then((res) => {
+      // res.data = [{month: 1, revenue: 1000}, ...]
+      const data = res.data || [];
+      setRevenueData(
+        data.map((item) => ({
           month: `Tháng ${item.month}`,
-          revenue: item.revenue
-        })));
-        setTotalRevenue(data.reduce((sum, item) => sum + item.revenue, 0));
-      });
+          revenue: item.revenue,
+        }))
+      );
+      setTotalRevenue(data.reduce((sum, item) => sum + item.revenue, 0));
+    });
+    axiosInstance.get("booking/monthly-summary").then((res) => {
+      setMonthlyOrders(res.data?.data || {});
+    });
   }, []);
+
+  // Tổng đơn hàng của tháng đang chọn
+  const totalOrdersThisMonth = monthlyOrders[selectedMonth] ?? 0;
+  // Tổng đơn hàng tháng trước
+  const prevMonth = selectedMonth > 1 ? selectedMonth - 1 : 12;
+  const totalOrdersPrevMonth = monthlyOrders[prevMonth] ?? 0;
+
+  // Tính phần trăm tăng/giảm
+  let percentChange = 0;
+  if (totalOrdersPrevMonth === 0 && totalOrdersThisMonth > 0) {
+    percentChange = 100;
+  } else if (totalOrdersPrevMonth === 0 && totalOrdersThisMonth === 0) {
+    percentChange = 0;
+  } else {
+    percentChange =
+      ((totalOrdersThisMonth - totalOrdersPrevMonth) / totalOrdersPrevMonth) *
+      100;
+  }
+  const percentText =
+    percentChange >= 0
+      ? `↑ ${percentChange.toFixed(2)}% so với tháng trước`
+      : `↓ ${Math.abs(percentChange).toFixed(2)}% so với tháng trước`;
 
   return (
     <div className="admin-container">
       {/* Sidebar */}
-      
+
       {/* Main Content */}
       <div className="main">
         {/* Navbar */}
-        <header className="navbar" style ={{ padding: "20px", display: "flex", alignItems: "end", flexDirection: "row-reverse" }}>
+        <header
+          className="navbar"
+          style={{
+            padding: "20px",
+            display: "flex",
+            alignItems: "end",
+            flexDirection: "row-reverse",
+          }}
+        >
           <select
             style={{ width: 140 }}
             value={selectedMonth}
-            onChange={e => setSelectedMonth(Number(e.target.value))}
+            onChange={(e) => setSelectedMonth(Number(e.target.value))}
           >
             <option value="">Chọn tháng</option>
             {[...Array(12)].map((_, i) => (
-              <option key={i+1} value={i+1}>{`Tháng ${i+1}`}</option>
+              <option key={i + 1} value={i + 1}>{`Tháng ${i + 1}`}</option>
             ))}
           </select>
         </header>
@@ -77,29 +112,31 @@ function Analysis() {
                 {/* Cards */}
                 <div className="cards">
                   <div className="card">
-                    <p>Tổng doanh thu</p>
-                    <h3>{totalRevenue.toLocaleString("vi-VN")} ₫</h3>
-                    <span className="success">Doanh thu 12 tháng gần nhất</span>
+                    <p>Tổng đơn hàng tháng {selectedMonth}</p>
+                    <h3>{totalOrdersThisMonth}</h3>
+                    <span className={percentChange >= 0 ? "success" : "danger"}>
+                      {percentText}
+                    </span>
                   </div>
                   <div className="card">
-                    <p>Tổng đơn hàng</p>
-                    <h3>9</h3>
-                    <span className="success">↑ 0% so với tháng trước</span>
-                  </div>
-                  <div className="card">
-                    <p>Tổng sản phẩm</p>
+                    <p>Tổng sản phẩm được cho thuê</p>
                     <h3>24</h3>
                     <span className="success">↑ 0% so với tháng trước</span>
                   </div>
                   <div className="card">
-                    <p>Tổng người dùng</p>
+                    <p>Tổng người dùng đã thuê</p>
                     <h3>3</h3>
                     <span className="success">↑ 0% so với tháng trước</span>
+                  </div>
+                  <div className="card">
+                    <p>Tổng đơn hàng tháng {selectedMonth}</p>
+                    <h3>{totalOrdersThisMonth}</h3>
+                    <span className="success">Đơn hàng tháng này</span>
                   </div>
                 </div>
 
                 {/* Bảng doanh thu từng tháng */}
-                <div className="mb-4">
+                {/* <div className="mb-4">
                   <h4>Doanh thu từng tháng</h4>
                   <table className="table table-bordered" style={{ maxWidth: 400 }}>
                     <thead>
@@ -117,19 +154,23 @@ function Analysis() {
                       ))}
                     </tbody>
                   </table>
-                </div>
+                </div> */}
 
                 {/* Charts */}
                 <div className="charts">
                   <div className="chart-box">
-                    <h4>Biểu đồ doanh thu</h4>
+                    <h4>Biểu đồ đơn thuê</h4>
                     <ResponsiveContainer width="100%" height={300}>
                       <LineChart data={revenueData}>
                         <CartesianGrid stroke="#ccc" />
                         <XAxis dataKey="month" />
                         <YAxis />
                         <Tooltip />
-                        <Line type="monotone" dataKey="revenue" stroke="#8884d8" />
+                        <Line
+                          type="monotone"
+                          dataKey="revenue"
+                          stroke="#8884d8"
+                        />
                       </LineChart>
                     </ResponsiveContainer>
                     <button className="report-btn">Xuất báo cáo</button>

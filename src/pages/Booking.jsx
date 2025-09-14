@@ -54,18 +54,21 @@ export default function Booking() {
             setLoading(true)
             const carId = searchParams.get('carId')
 
-            const sD = searchParams.get('sD')
-            const sT = searchParams.get('sT')
-            const startDateTime = `${sD} ${sT}`
+            // Lấy thời gian từ input người dùng chọn
+            const startDateTime = startDate.hour(startTime.hour()).minute(startTime.minute()).format("YYYY-MM-DD HH:mm");
+            const endDateTime = endDate.hour(endTime.hour()).minute(endTime.minute()).format("YYYY-MM-DD HH:mm");
 
-            const eD = searchParams.get('eD')
-            const eT = searchParams.get('eT')
-            const endDateTime = `${eD} ${eT}`
+            // Tính số giờ thuê và tổng tiền
+            const diffMs = endDate.hour(endTime.hour()).minute(endTime.minute()).diff(startDate.hour(startTime.hour()).minute(startTime.minute()), "minute");
+            const numberOfHour = diffMs > 0 ? diffMs / 60 : 0;
+            const total = (car?.basePrice ?? 0) * (numberOfHour / 24);
 
             const submitData = {
                 carId,
                 startDateTime,
                 endDateTime,
+                numberOfHour,
+                total,
                 ...bookingData,
                 ...data
             }
@@ -92,12 +95,28 @@ export default function Booking() {
     const [endDate, setEndDate] = useState(dayjs().add(1, "day"));
     const [endTime, setEndTime] = useState(dayjs().hour(8).minute(0));
 
-    // Tính số ngày thuê (tối đa 7 ngày)
+    // Khai báo maxDays trước khi dùng
     const maxDays = 7;
-    const selectedStart = startDate.hour(startTime.hour()).minute(startTime.minute());
-    const selectedEnd = endDate.hour(endTime.hour()).minute(endTime.minute());
+
+    // Đúng: kết hợp ngày và giờ bằng .set
+    const selectedStart = startDate
+        .set('hour', startTime.hour())
+        .set('minute', startTime.minute())
+        .set('second', 0)
+        .set('millisecond', 0);
+
+    const selectedEnd = endDate
+        .set('hour', endTime.hour())
+        .set('minute', endTime.minute())
+        .set('second', 0)
+        .set('millisecond', 0);
+
     const diffMs = selectedEnd.diff(selectedStart, "minute");
     const hoursDiff = diffMs > 0 ? diffMs / 60 : 0;
+
+    // Tính tổng tiền và đặt cọc
+    const total = (car?.basePrice ?? 0) * (hoursDiff );
+    const deposit = car?.deposit;;
 
     // Giới hạn ngày bắt đầu: chỉ được chọn hôm nay hoặc ngày hôm sau
     const disabledStartDate = (d) => {
@@ -233,17 +252,19 @@ export default function Booking() {
                                     <h4>Booking Summary</h4>
                                 </div>
                                 <div className="row mb-3">
-                                    <h5 className="text-end">Number of hours: { Math.round(hoursDiff) }h</h5>
+                                    <h5 className="text-end">
+                                        Number of hours: {hoursDiff.toFixed(2)}h
+                                    </h5>
                                 </div>
                                 <div className="row mb-3">
                                     <h5 className="text-end">Price per day: {currencyFormat((car?.basePrice ?? 0) * MULTIPLIED_AMOUNT, 'VND', false)} VND</h5>
                                 </div>
                                 <div className="w-75 pt-1 mb-3 ms-auto bg-dark"></div>
                                 <div className="row mb-3">
-                                    <h5 className="text-end">Total: {currencyFormat((car?.basePrice ?? 0) * (hoursDiff / 24) * MULTIPLIED_AMOUNT, 'VND', false)} VND</h5>
+                                    <h5 className="text-end">Total: {currencyFormat(total * MULTIPLIED_AMOUNT, 'VND', false)} VND</h5>
                                 </div>
                                 <div className="row mb-3">
-                                    <h5 className="text-end">Deposit: {currencyFormat((car?.deposit ?? 0) * MULTIPLIED_AMOUNT, 'VND', false)} VND</h5>
+                                    <h5 className="text-end">Deposit: {currencyFormat(deposit * MULTIPLIED_AMOUNT, 'VND', false)} VND</h5>
                                 </div>
                             </div>
                         </div>
@@ -252,7 +273,21 @@ export default function Booking() {
             }
             {currentStep == 1 && <BookingStep1 onCancel={handleCancel} onNextStep={nextStep}/>}
 
-            {currentStep == 2 && <BookingStep2 disabled={loading} loading={loading} deposit={car?.deposit ?? 0} onCancel={handleCancel} onNextStep={nextStep}/>}
+            {currentStep == 2 && (
+                <BookingStep2
+                    disabled={loading}
+                    loading={loading}
+                    deposit={deposit}
+                    startDate={startDate}
+                    startTime={startTime}
+                    endDate={endDate}
+                    endTime={endTime}
+                    numberOfHour={hoursDiff}
+                    total={total}
+                    onCancel={handleCancel}
+                    onNextStep={nextStep}
+                />
+            )}
 
             {currentStep == 3 && <BookingStep3 bookingResData={bookingResData}/>}
         </>
