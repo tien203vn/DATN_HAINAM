@@ -17,7 +17,7 @@ import axiosInstance from "../../../../shared/utils/authorizedAxios";
 
 import "../../../../styles/admin.css";
 
-function Analysis() {
+function Revenue() {
   const monthNames = [
     "Jan",
     "Feb",
@@ -41,27 +41,35 @@ function Analysis() {
   const [monthlyCustomers, setMonthlyCustomers] = useState({});
   const [monthlyHours, setMonthlyHours] = useState({});
   const [monthlyStatus, setMonthlyStatus] = useState({});
+  const [monthlyTopRevenueCars, setMonthlyTopRevenueCars] = useState({});
+  const [topRentedCars, setTopRentedCars] = useState([]);
 
   useEffect(() => {
-    axiosInstance.get("booking/monthly-summary").then((res) => {
+    axiosInstance.get("booking/monthly-revenue-summary").then((res) => {
       setMonthlyOrders(res.data?.data || {});
     });
-    axiosInstance.get("booking/monthly-product-summary").then((res) => {
+    axiosInstance.get("booking/monthly-repair-cost-summary").then((res) => {
       setMonthlyProducts(res.data?.data || {});
     });
-    axiosInstance.get("booking/monthly-customer-summary").then((res) => {
+    axiosInstance.get("booking/monthly-late-fee-summary").then((res) => {
       setMonthlyCustomers(res.data?.data || {});
     });
     axiosInstance.get("booking/monthly-hours-summary").then((res) => {
       setMonthlyHours(res.data?.data || {});
     });
-    axiosInstance.get("booking/monthly-status-summary").then((res) => {
-      setMonthlyStatus(res.data?.data || {});
+    axiosInstance.get("booking/monthly-top-revenue-cars").then((res) => {
+      setMonthlyTopRevenueCars(res.data?.data || {});
+    });
+    axiosInstance.get("booking/monthly-top-rented-cars").then((res) => {
+      setTopRentedCars(res.data?.data || []);
     });
   }, []);
 
   // Tổng đơn hàng của tháng đang chọn
-  const totalOrdersThisMonth = monthlyOrders[selectedMonth] ?? 0;
+  let totalOrdersThisMonth = monthlyOrders[selectedMonth] ?? 0 ;
+  if(totalOrdersThisMonth){
+    totalOrdersThisMonth *= 1000000;
+  }
   // Tổng đơn hàng tháng trước
   const prevMonth = selectedMonth > 1 ? selectedMonth - 1 : 12;
   const totalOrdersPrevMonth = monthlyOrders[prevMonth] ?? 0;
@@ -83,7 +91,10 @@ function Analysis() {
       : `↓ ${Math.abs(percentChange).toFixed(2)}% so với tháng trước`;
 
   // Tổng sản phẩm cho thuê của tháng đang chọn
-  const totalProductsThisMonth = monthlyProducts[selectedMonth] ?? 0;
+  let totalProductsThisMonth = monthlyProducts[selectedMonth] ?? 0;
+  if(totalProductsThisMonth){
+    totalProductsThisMonth *= 1000000;
+  }
   // Tổng sản phẩm tháng trước
   const totalProductsPrevMonth = monthlyProducts[prevMonth] ?? 0;
 
@@ -95,7 +106,8 @@ function Analysis() {
     percentProductChange = 0;
   } else {
     percentProductChange =
-      ((totalProductsThisMonth - totalProductsPrevMonth) / totalProductsPrevMonth) *
+      ((totalProductsThisMonth - totalProductsPrevMonth) /
+        totalProductsPrevMonth) *
       100;
   }
   const percentProductText =
@@ -104,7 +116,7 @@ function Analysis() {
       : `↓ ${Math.abs(percentProductChange).toFixed(2)}% so với tháng trước`;
 
   // Tổng người dùng đã thuê của tháng đang chọn
-  const totalCustomersThisMonth = monthlyCustomers[selectedMonth] ?? 0;
+  const totalCustomersThisMonth = (monthlyCustomers[selectedMonth] ?? 0)* 1000000;
   // Tổng người dùng tháng trước
   const totalCustomersPrevMonth = monthlyCustomers[prevMonth] ?? 0;
 
@@ -116,7 +128,9 @@ function Analysis() {
     percentCustomerChange = 0;
   } else {
     percentCustomerChange =
-      ((totalCustomersThisMonth - totalCustomersPrevMonth) / totalCustomersPrevMonth) * 100;
+      ((totalCustomersThisMonth - totalCustomersPrevMonth) /
+        totalCustomersPrevMonth) *
+      100;
   }
   const percentCustomerText =
     percentCustomerChange >= 0
@@ -146,22 +160,49 @@ function Analysis() {
   // Tạo biến orderReview từ monthlyOrders, chỉ lấy đến tháng hiện tại
   const orderReview = Array.from({ length: currentMonth }, (_, i) => ({
     month: monthNames[i],
-    order: monthlyOrders[i + 1] ?? 0,
+    revenue: monthlyOrders[i + 1] ?? 0,
   }));
 
   // Lấy dữ liệu trạng thái đơn hàng của tháng đang chọn
-  // Đảm bảo luôn có các trạng thái: CANCELLED, COMPLETED, CONFIRMED, PICK_UP
-  const rawStatus = monthlyStatus[selectedMonth] ?? [];
+  // Đảm bảo rawStatus luôn là mảng
+  const rawStatus = Array.isArray(monthlyStatus[selectedMonth]) ? monthlyStatus[selectedMonth] : [];
   const statusNames = ["CANCELLED", "COMPLETED", "CONFIRMED", "PICK_UP"];
   const orderStatusData = statusNames.map((name) => {
     const found = rawStatus.find((item) => item.name === name);
     return {
       name,
-      value: found ? found.value : 0
+      value: found ? found.value : 0,
     };
   });
 
-  const COLORS = ["#00C49F", "#FFBB28", "#FF8042", "#8884d8"];
+  // Chuẩn hóa dữ liệu cho PieChart top doanh thu xe theo tháng đang chọn
+  const topRevenuePieData = Array.isArray(monthlyTopRevenueCars[selectedMonth])
+    ? monthlyTopRevenueCars[selectedMonth].length > 0
+      ? monthlyTopRevenueCars[selectedMonth].map((car) => ({
+          name: car.carName,
+          value: car.totalRevenue
+        }))
+      : [{ name: "Không có dữ liệu", value: 1 }]
+    : [{ name: "Không có dữ liệu", value: 1 }];
+
+  // Đảm bảo PieChart luôn có dữ liệu (nếu không có thì hiển thị dummy)
+  const pieDataToShow = topRevenuePieData.length > 0
+    ? topRevenuePieData
+    : [{ name: "Không có dữ liệu", value: 1 }];
+
+  // Chuẩn hóa dữ liệu cho PieChart top 10 xe thuê nhiều nhất
+  const topRentedPieData = Array.isArray(topRentedCars)
+    ? topRentedCars.map((car) => ({
+        name: car.carName,
+        value: car.rentalCount
+      }))
+    : [];
+
+  // Tạo mảng màu động cho tối đa 10 xe
+  const dynamicColors = [
+    "#00C49F", "#FFBB28", "#FF8042", "#8884d8", "#FF6666",
+    "#66CCFF", "#FFB6C1", "#A0522D", "#8A2BE2", "#228B22"
+  ];
 
   return (
     <div className="admin-container">
@@ -203,31 +244,32 @@ function Analysis() {
                 {/* Cards */}
                 <div className="cards">
                   <div className="card">
-                    <p>Tổng đơn hàng tháng {selectedMonth}</p>
+                    <p>Tổng doanh thu </p>
                     <h3>{totalOrdersThisMonth}</h3>
                     <span className={percentChange >= 0 ? "success" : "danger"}>
                       {percentText}
                     </span>
                   </div>
                   <div className="card">
-                    <p>Tổng sản phẩm cho thuê tháng {selectedMonth}</p>
+                    <p>Tổng số tiền phải sửa chữa </p>
                     <h3>{totalProductsThisMonth}</h3>
-                    <span className={percentProductChange >= 0 ? "success" : "danger"}>
+                    <span
+                      className={
+                        percentProductChange >= 0 ? "success" : "danger"
+                      }
+                    >
                       {percentProductText}
                     </span>
                   </div>
                   <div className="card">
-                    <p>Tổng người dùng đã thuê tháng {selectedMonth}</p>
+                    <p>Tổng số tiền xe trả muộn </p>
                     <h3>{totalCustomersThisMonth}</h3>
-                    <span className={percentCustomerChange >= 0 ? "success" : "danger"}>
+                    <span
+                      className={
+                        percentCustomerChange >= 0 ? "success" : "danger"
+                      }
+                    >
                       {percentCustomerText}
-                    </span>
-                  </div>
-                  <div className="card">
-                    <p>Tổng số giờ thuê tháng {selectedMonth}</p>
-                    <h3>{totalHoursThisMonth}</h3>
-                    <span className={percentHoursChange >= 0 ? "success" : "danger"}>
-                      {percentHoursText}
                     </span>
                   </div>
                 </div>
@@ -256,8 +298,8 @@ function Analysis() {
                 {/* Charts */}
                 <div className="charts">
                   <div className="chart-box">
-                    <h4>Biểu đồ đơn thuê</h4>
-                    <ResponsiveContainer width="100%" height={300}>
+                    <h4>Biểu đồ doanh thu</h4>
+                    <ResponsiveContainer width="100%" height={400}>
                       <LineChart data={orderReview}>
                         <CartesianGrid stroke="#ccc" />
                         <XAxis dataKey="month" />
@@ -265,7 +307,7 @@ function Analysis() {
                         <Tooltip />
                         <Line
                           type="monotone"
-                          dataKey="order"
+                          dataKey="revenue"
                           stroke="#8884d8"
                         />
                       </LineChart>
@@ -274,8 +316,65 @@ function Analysis() {
                   </div>
 
                   <div className="chart-box">
-                    <h4>Trạng thái đơn hàng</h4>
-                    <ResponsiveContainer width="100%" height={300}>
+                    <h4>Top 10 doanh thu xe</h4>
+                    <ResponsiveContainer width="100%" height={400}>
+                      <PieChart>
+                        <Pie
+                          data={topRevenuePieData}
+                          dataKey="value"
+                          nameKey="name"
+                          cx="50%"
+                          cy="50%"
+                          outerRadius={100}
+                          fill="#8884d8"
+                          label
+                        >
+                          {topRevenuePieData.map((entry, index) => (
+                            <Cell
+                              key={`cell-${index}`}
+                              fill={dynamicColors[index] || "#ccc"}
+                            />
+                          ))}
+                        </Pie>
+                        <Tooltip />
+                        <Legend />
+                      </PieChart>
+                    </ResponsiveContainer>
+                  </div>
+                </div>
+
+                <div className="charts mt-3">
+
+                  <div className="chart-box">
+                    <h4>Top 10 xe thuê</h4>
+                    <ResponsiveContainer width="100%" height={400}>
+                      <PieChart>
+                        <Pie
+                          data={topRentedPieData}
+                          dataKey="value"
+                          nameKey="name"
+                          cx="50%"
+                          cy="50%"
+                          outerRadius={100}
+                          fill="#8884d8"
+                          label
+                        >
+                         {topRentedPieData.map((entry, index) => (
+                            <Cell
+                              key={`cell-${index}`}
+                              fill={dynamicColors[index]}
+                            />
+                          ))}
+                        </Pie>
+                        <Tooltip />
+                        <Legend />
+                      </PieChart>
+                    </ResponsiveContainer>
+                  </div>
+
+                  <div className="chart-box">
+                    <h4>Top 10 </h4>
+                    <ResponsiveContainer width="100%" height={400}>
                       <PieChart>
                         <Pie
                           data={orderStatusData}
@@ -287,10 +386,10 @@ function Analysis() {
                           fill="#8884d8"
                           label
                         >
-                          {orderStatusData.map((entry, index) => (
+                         {orderStatusData.map((entry, index) => (
                             <Cell
                               key={`cell-${index}`}
-                              fill={COLORS[index % COLORS.length]}
+                              fill={dynamicColors[index]}
                             />
                           ))}
                         </Pie>
@@ -309,4 +408,4 @@ function Analysis() {
   );
 }
 
-export default Analysis;
+export default Revenue;

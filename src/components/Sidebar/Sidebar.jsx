@@ -42,9 +42,9 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }) => {
       icon: Car,
       submenu: [
         { label: "My Cars", path: "/my-cars" },
-        { label: "Add New Car", path: "/add-car" },
-        { label: "Xe đang chờ duyệt", path: "/my-cars-active" }, //lấy ra xe đang chờ duyệt thuê
-        { label: "Xe không hoạt động", path: "/my-cars-not-active" }, //lấy ra xe đã hoàn thành và đang chờ nhà xe kiểm tra
+        // { label: "Xe trống", path: "/add-car" },
+        { label: "Xe đang chờ xác nhận", path: "/car-confirm" }, //lấy ra xe đang chờ duyệt thuê
+        { label: "Xe bảo trì", path: "/my-cars-not-active" }, //lấy ra xe đã hoàn thành và đang chờ nhà xe kiểm tra
       ],
     },
     {
@@ -62,8 +62,7 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }) => {
       icon: Users,
       submenu: [
         { label: "All Customers", path: "/user-booking" },
-        { label: "Khách đang thuê", path: "/customers/vip" },
-        { label: "Customer Reviews", path: "/customers/feedback" },
+        { label: "Khách đang thuê", path: "/user-renting" },
       ],
     },
     {
@@ -72,9 +71,9 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }) => {
       icon: BarChart3,
       submenu: [
         { label: "Revenue", path: "/reports/revenue", icon: DollarSign },
-        { label: "Vehicle Stats", path: "/reports/vehicles", icon: Car },
-        { label: "Customers", path: "/reports/customers", icon: UserCheck },
-        { label: "Trends", path: "/reports/trends", icon: TrendingUp },
+        // { label: "Vehicle Stats", path: "/reports/vehicles", icon: Car },
+        // { label: "Customers", path: "/reports/customers", icon: UserCheck },
+        // { label: "Trends", path: "/reports/trends", icon: TrendingUp },
       ],
     },
     {

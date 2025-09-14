@@ -21,6 +21,8 @@ import CarBookingDetails from './pages/CarBookingDetails'
 import ProtectedRoute from './router/ProtectedRoute'
 import OwnerBookingDetailPage from './components/home/Customer/Booking/OwnerBookingDetailPage'
 import UsersBooking from './components/home/Customer/User/UsersBooking'
+import UserRenting from './components/home/Customer/User/UserRenting'
+import CarConfirmActive from './components/home/Customer/Booking/CarConfirmActive'
 
 // Admin
 import AdminDashboard from './admin/AdminDashboard'
@@ -32,6 +34,7 @@ import Analysis from './components/home/Customer/Booking/Analysis'
 import CustomerOrders from './components/home/Customer/Booking/CustomerOrder'
 import MyCarsBooking from './pages/MyCarsBooking'
 import MyCarsNotBooking from './pages/MyCarsNotBooking'
+import Revenue from './components/home/Customer/Revenue/Revenue'
 function App() {
   return (
     <BrowserRouter>
@@ -50,16 +53,19 @@ function App() {
           <Route path="my-cars-not-active" element={<ProtectedRoute><MyCarsNotBooking /></ProtectedRoute>} />
           <Route path="my-cars/:carId" element={<ProtectedRoute><MyCarDetails /></ProtectedRoute>} />
           <Route path="add-car" element={<ProtectedRoute><AddACar /></ProtectedRoute>} />
+          <Route path="car-confirm" element={<ProtectedRoute><CarConfirmActive /></ProtectedRoute>} />
           <Route path="wallet" element={<ProtectedRoute><MyWallet /></ProtectedRoute>} />
           <Route path="my-reports" element={<ProtectedRoute><MyReports /></ProtectedRoute>} />
           <Route path="my-profile" element={<ProtectedRoute><MyProfile /></ProtectedRoute>} />
           <Route path="/bookings/order" element={<ProtectedRoute><CustomerOrders /></ProtectedRoute>} />
           <Route path="/bookings/analysis" element={<ProtectedRoute><Analysis /></ProtectedRoute>} />
           <Route path="/user-booking" element={<ProtectedRoute><UsersBooking /></ProtectedRoute>} />
+          <Route path="/user-renting" element={<ProtectedRoute><UserRenting /></ProtectedRoute>} />
           {/* BỎ dấu / để route con render trong Layout */}
           <Route path="cars/:carId" element={<ProtectedRoute><CarDetails /></ProtectedRoute>} />
           <Route path="forgot-password" element={<ForgotPassword />} />
           <Route path="not-found" element={<NotFound />} />
+          <Route path="/reports/revenue" element={<ProtectedRoute><Revenue /></ProtectedRoute>} />
         </Route>
 
         {/* Admin */}

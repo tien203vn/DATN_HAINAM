@@ -11,6 +11,12 @@ export default function BookingStep2({
   disabled,
   loading,
   deposit,
+  startDate,
+  startTime,
+  endDate,
+  endTime,
+  numberOfHour,
+  total,
   onCancel,
   onNextStep
 }) {
@@ -20,11 +26,27 @@ export default function BookingStep2({
   const [searchParams] = useSearchParams()
   const sD = searchParams.get('sD')
   const sT = searchParams.get('sT')
-  const startDateTime = formatDateTime(`${sD}T${sT}`)
+  const startDateTime =
+    startDate && startTime
+      ? startDate
+          .set('hour', startTime.hour())
+          .set('minute', startTime.minute())
+          .set('second', 0)
+          .set('millisecond', 0)
+          .format('YYYY-MM-DD HH:mm')
+      : ''
 
   const eD = searchParams.get('eD')
   const eT = searchParams.get('eT')
-  const endDateTime = formatDateTime(`${eD}T${eT}`)
+  const endDateTime =
+    endDate && endTime
+      ? endDate
+          .set('hour', endTime.hour())
+          .set('minute', endTime.minute())
+          .set('second', 0)
+          .set('millisecond', 0)
+          .format('YYYY-MM-DD HH:mm')
+      : ''
 
   const { register, handleSubmit } = useForm({
     defaultValues: {
@@ -174,6 +196,39 @@ export default function BookingStep2({
             </div>
           </div>
         </form>
+      </div>
+      <div className="mb-3">
+        <h5>Thông tin thuê xe</h5>
+        <ul>
+          <li>
+            Ngày nhận xe:{' '}
+            {startDate && startDate.format('YYYY-MM-DD')}{' '}
+            {startTime && startTime.format('HH:mm')}
+          </li>
+          <li>
+            Ngày trả xe:{' '}
+            {endDate && endDate.format('YYYY-MM-DD')}{' '}
+            {endTime && endTime.format('HH:mm')}
+          </li>
+          <li>
+            Số giờ thuê:{' '}
+            {numberOfHour && numberOfHour.toFixed(2)}h
+          </li>
+          <li>
+            Tổng tiền thuê:{' '}
+            {total && total > 0
+              ? total.toLocaleString('vi-VN')
+              : 0}{' '}
+            VND
+          </li>
+          <li>
+            Tiền đặt cọc:{' '}
+            {deposit && deposit > 0
+              ? deposit.toLocaleString('vi-VN')
+              : 0}{' '}
+            VND
+          </li>
+        </ul>
       </div>
       <ConfirmModal
         show={showConfirmModal}
