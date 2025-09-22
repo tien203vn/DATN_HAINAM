@@ -35,6 +35,7 @@ import CustomerOrders from './components/home/Customer/Booking/CustomerOrder'
 import MyCarsBooking from './pages/MyCarsBooking'
 import MyCarsNotBooking from './pages/MyCarsNotBooking'
 import Revenue from './components/home/Customer/Revenue/Revenue'
+import UsersManager from './admin/UsersManager'
 function App() {
   return (
     <BrowserRouter>
@@ -73,7 +74,7 @@ function App() {
           <Route index element={<Navigate to="products" replace />} />
           <Route path="products" element={<Products />} />
           <Route path="orders" element={<Orders />} />
-          <Route path="users" element={<Users />} />
+          <Route path="users" element={<UsersManager />} />
           <Route path="categories" element={<Categories />} />
         </Route>
 

@@ -29,6 +29,7 @@ import Products from "../pages/pageAdmin/Products";
 import Orders from "../pages/pageAdmin/Orders";
 import Users from "../pages/pageAdmin/Users";
 import Categories from "../pages/pageAdmin/Categories";
+import UsersManager from "./UsersManager";
 
 // Dữ liệu fix cứng cho chart
 const revenueData = [
@@ -170,7 +171,7 @@ function AdminDashboard() {
           />
           <Route path="/products" element={<Products />} />
           <Route path="/orders" element={<Orders />} />
-          <Route path="/users" element={<Users />} />
+          <Route path="/users" element={<UsersManager />} />
           <Route path="/categories" element={<Categories />} />
         </Routes>
       </div>
