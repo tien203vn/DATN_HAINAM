@@ -75,7 +75,7 @@
         bottom: 24,
         right: 24,
         zIndex: 9999,
-        width: minimized ? 60 : 350,
+        width: minimized ? 80 : 350,
         height: minimized ? 60 : 420,
         boxShadow: '0 2px 16px rgba(0,0,0,0.15)',
         borderRadius: 16,
@@ -86,23 +86,41 @@
         flexDirection: 'column',
         alignItems: 'stretch',
       }}>
-        <div style={{
-          background: '#4285F4',
-          color: '#fff',
-          padding: '10px 16px',
-          cursor: 'pointer',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'space-between',
-        }}>
-          <span style={{ fontWeight: 600 }}>Chatbot hỗ trợ dịch vụ ô tô</span>
-          <button onClick={() => setMinimized(m => !m)} style={{
-            background: 'none',
-            border: 'none',
+        <div
+          style={{
+            background: '#4285F4',
             color: '#fff',
-            fontSize: 18,
+            padding: minimized ? '10px' : '10px 16px',
             cursor: 'pointer',
-          }}>{minimized ? '▲' : '▼'}</button>
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            height: minimized ? 60 : undefined,
+          }}
+          onClick={() => minimized && setMinimized(false)}
+        >
+          <span style={{ fontWeight: 600 }}>
+            {!minimized && 'Chatbot hỗ trợ dịch vụ ô tô'}
+            {minimized && (
+              <span style={{ fontSize: 28, marginLeft: 4 }}>
+                {/* Biểu tượng chat đơn giản, có thể thay bằng SVG hoặc hình ảnh nếu muốn */}
+                💬
+              </span>
+            )}
+          </span>
+          <button
+            onClick={e => {
+              e.stopPropagation();
+              setMinimized(m => !m);
+            }}
+            style={{
+              background: 'none',
+              border: 'none',
+              color: '#fff',
+              fontSize: 18,
+              cursor: 'pointer',
+            }}
+          >{minimized ? '▲' : '▼'}</button>
         </div>
         {!minimized && (
           <div style={{ flex: 1, padding: '12px', overflowY: 'auto', fontSize: 15 }}>
