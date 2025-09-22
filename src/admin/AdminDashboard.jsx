@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import {
   FaTachometerAlt,
   FaBox,
@@ -21,6 +21,7 @@ import {
   Cell,
   Legend,
 } from "recharts";
+import axiosInstance from "../shared/utils/authorizedAxios";
 
 import "../styles/admin.css";
 
@@ -30,38 +31,156 @@ import Orders from "../pages/pageAdmin/Orders";
 import Users from "../pages/pageAdmin/Users";
 import Categories from "../pages/pageAdmin/Categories";
 import UsersManager from "./UsersManager";
-
-// Dữ liệu fix cứng cho chart
-const revenueData = [
-  { month: "Jan", revenue: 4000000 },
-  { month: "Feb", revenue: 3000000 },
-  { month: "Mar", revenue: 2000000 },
-  { month: "Apr", revenue: 2780000 },
-  { month: "May", revenue: 1890000 },
-  { month: "Jun", revenue: 2390000 },
-  { month: "Jul", revenue: 3490000 },
-];
-
-const orderStatusData = [
-  { name: "Hoàn thành", value: 7 },
-  { name: "Đang xử lý", value: 2 },
-  { name: "Đã hủy", value: 1 },
-];
-
-const COLORS = ["#00C49F", "#FFBB28", "#FF8042"];
+import CustomerOrders from "./CustomerOrder";
 
 function AdminDashboard() {
+  const monthNames = [
+    "Jan",
+    "Feb",
+    "Mar",
+    "Apr",
+    "May",
+    "Jun",
+    "Jul",
+    "Aug",
+    "Sep",
+    "Oct",
+    "Nov",
+    "Dec",
+  ];
+  const currentMonth = new Date().getMonth() + 1;
+  const [selectedMonth, setSelectedMonth] = useState(currentMonth);
+  const [monthlyOrders, setMonthlyOrders] = useState({});
+  const [monthlyProducts, setMonthlyProducts] = useState({});
+  const [monthlyCustomers, setMonthlyCustomers] = useState({});
+  const [monthlyHours, setMonthlyHours] = useState({});
+  const [monthlyStatus, setMonthlyStatus] = useState({});
+
+  useEffect(() => {
+    axiosInstance.get("booking/admin/monthly-summary").then((res) => {
+      setMonthlyOrders(res.data?.data || {});
+    });
+    axiosInstance.get("booking/admin/monthly-product-summary").then((res) => {
+      setMonthlyProducts(res.data?.data || {});
+    });
+    axiosInstance.get("booking/admin/monthly-customer-summary").then((res) => {
+      setMonthlyCustomers(res.data?.data || {});
+    });
+    axiosInstance.get("booking/admin/monthly-hours-summary").then((res) => {
+      setMonthlyHours(res.data?.data || {});
+    });
+    axiosInstance.get("booking/admin/monthly-status-summary").then((res) => {
+      setMonthlyStatus(res.data?.data || {});
+    });
+  }, []);
+
+  // Tổng đơn hàng của tháng đang chọn
+  const totalOrdersThisMonth = monthlyOrders[selectedMonth] ?? 0;
+  // Tổng đơn hàng tháng trước
+  const prevMonth = selectedMonth > 1 ? selectedMonth - 1 : 12;
+  const totalOrdersPrevMonth = monthlyOrders[prevMonth] ?? 0;
+
+  // Tính phần trăm tăng/giảm
+  let percentChange = 0;
+  if (totalOrdersPrevMonth === 0 && totalOrdersThisMonth > 0) {
+    percentChange = 100;
+  } else if (totalOrdersPrevMonth === 0 && totalOrdersThisMonth === 0) {
+    percentChange = 0;
+  } else {
+    percentChange =
+      ((totalOrdersThisMonth - totalOrdersPrevMonth) / totalOrdersPrevMonth) *
+      100;
+  }
+  const percentText =
+    percentChange >= 0
+      ? `↑ ${percentChange.toFixed(2)}% so với tháng trước`
+      : `↓ ${Math.abs(percentChange).toFixed(2)}% so với tháng trước`;
+
+  // Tổng sản phẩm cho thuê của tháng đang chọn
+  const totalProductsThisMonth = monthlyProducts[selectedMonth] ?? 0;
+  const totalProductsPrevMonth = monthlyProducts[prevMonth] ?? 0;
+
+  let percentProductChange = 0;
+  if (totalProductsPrevMonth === 0 && totalProductsThisMonth > 0) {
+    percentProductChange = 100;
+  } else if (totalProductsPrevMonth === 0 && totalProductsThisMonth === 0) {
+    percentProductChange = 0;
+  } else {
+    percentProductChange =
+      ((totalProductsThisMonth - totalProductsPrevMonth) / totalProductsPrevMonth) *
+      100;
+  }
+  const percentProductText =
+    percentProductChange >= 0
+      ? `↑ ${percentProductChange.toFixed(2)}% so với tháng trước`
+      : `↓ ${Math.abs(percentProductChange).toFixed(2)}% so với tháng trước`;
+
+  // Tổng người dùng đã thuê của tháng đang chọn
+  const totalCustomersThisMonth = monthlyCustomers[selectedMonth] ?? 0;
+  const totalCustomersPrevMonth = monthlyCustomers[prevMonth] ?? 0;
+
+  let percentCustomerChange = 0;
+  if (totalCustomersPrevMonth === 0 && totalCustomersThisMonth > 0) {
+    percentCustomerChange = 100;
+  } else if (totalCustomersPrevMonth === 0 && totalCustomersThisMonth === 0) {
+    percentCustomerChange = 0;
+  } else {
+    percentCustomerChange =
+      ((totalCustomersThisMonth - totalCustomersPrevMonth) / totalCustomersPrevMonth) * 100;
+  }
+  const percentCustomerText =
+    percentCustomerChange >= 0
+      ? `↑ ${percentCustomerChange.toFixed(2)}% so với tháng trước`
+      : `↓ ${Math.abs(percentCustomerChange).toFixed(2)}% so với tháng trước`;
+
+  // Tổng số giờ thuê của tháng đang chọn
+  const totalHoursThisMonth = monthlyHours[selectedMonth] ?? 0;
+  const totalHoursPrevMonth = monthlyHours[prevMonth] ?? 0;
+
+  let percentHoursChange = 0;
+  if (totalHoursPrevMonth === 0 && totalHoursThisMonth > 0) {
+    percentHoursChange = 100;
+  } else if (totalHoursPrevMonth === 0 && totalHoursThisMonth === 0) {
+    percentHoursChange = 0;
+  } else {
+    percentHoursChange =
+      ((totalHoursThisMonth - totalHoursPrevMonth) / totalHoursPrevMonth) * 100;
+  }
+  const percentHoursText =
+    percentHoursChange >= 0
+      ? `↑ ${percentHoursChange.toFixed(2)}% so với tháng trước`
+      : `↓ ${Math.abs(percentHoursChange).toFixed(2)}% so với tháng trước`;
+
+  // Tạo biến orderReview từ monthlyOrders, chỉ lấy đến tháng hiện tại
+  const orderReview = Array.from({ length: currentMonth }, (_, i) => ({
+    month: monthNames[i],
+    order: monthlyOrders[i + 1] ?? 0,
+  }));
+
+  // Lấy dữ liệu trạng thái đơn hàng của tháng đang chọn
+  const rawStatus = monthlyStatus[selectedMonth] ?? [];
+  const statusNames = ["CANCELLED", "COMPLETED", "CONFIRMED", "PICK_UP"];
+  const orderStatusData = statusNames.map((name) => {
+    const found = rawStatus.find((item) => item.name === name);
+    return {
+      name,
+      value: found ? found.value : 0
+    };
+  });
+
+  const COLORS = ["#00C49F", "#FFBB28", "#FF8042", "#8884d8"];
+
   return (
     <div className="admin-container">
       {/* Sidebar */}
       <aside className="sidebar">
-        <div className="logo">Tiến Nổ</div>
+        <div className="logo">Admin Panel</div>
         <nav className="menu">
           <NavLink to="." end>
             <FaTachometerAlt /> Dashboard
           </NavLink>
           <NavLink to="products">
-            <FaBox /> Sản phẩm
+            <FaBox /> Xe cho thuê
           </NavLink>
           <NavLink to="orders">
             <FaShoppingCart /> Đơn hàng
@@ -69,9 +188,7 @@ function AdminDashboard() {
           <NavLink to="users">
             <FaUsers /> Người dùng
           </NavLink>
-          <NavLink to="categories">
-            <FaList /> Danh mục
-          </NavLink>
+
         </nav>
         <div className="logout">
           <FaSignOutAlt /> Đăng xuất
@@ -81,13 +198,25 @@ function AdminDashboard() {
       {/* Main Content */}
       <div className="main">
         {/* Navbar */}
-        <header className="navbar" style ={{ padding: "20px" }}>
-          <input type="text" placeholder="Tìm kiếm..." />
-          <div className="profile">
-            <span className="bell">🔔</span>
-            <div className="avatar">A</div>
-            <span>Admin</span>
-          </div>
+        <header
+          className="navbar"
+          style={{
+            padding: "20px",
+            display: "flex",
+            alignItems: "end",
+            flexDirection: "row-reverse",
+          }}
+        >
+          <select
+            style={{ width: 140 }}
+            value={selectedMonth}
+            onChange={(e) => setSelectedMonth(Number(e.target.value))}
+          >
+            <option value="">Chọn tháng</option>
+            {[...Array(12)].map((_, i) => (
+              <option key={i + 1} value={i + 1}>{`Tháng ${i + 1}`}</option>
+            ))}
+          </select>
         </header>
 
         {/* Routes */}
@@ -96,44 +225,56 @@ function AdminDashboard() {
             path="/"
             element={
               <div className="dashboard">
-                <h2>Dashboard</h2>
-                <p className="subtitle">Tổng quan về hoạt động của cửa hàng</p>
+                <h2>Admin Dashboard</h2>
+                <p className="subtitle">Tổng quan về hoạt động của hệ thống</p>
 
                 {/* Cards */}
                 <div className="cards">
                   <div className="card">
-                    <p>Tổng doanh thu</p>
-                    <h3>4.990.000 ₫</h3>
-                    <span className="success">↑ 0% so với tháng trước</span>
+                    <p>Tổng đơn hàng tháng {selectedMonth}</p>
+                    <h3>{totalOrdersThisMonth}</h3>
+                    <span className={percentChange >= 0 ? "success" : "danger"}>
+                      {percentText}
+                    </span>
                   </div>
                   <div className="card">
-                    <p>Tổng đơn hàng</p>
-                    <h3>9</h3>
-                    <span className="success">↑ 0% so với tháng trước</span>
+                    <p>Tổng xe được thuê tháng {selectedMonth}</p>
+                    <h3>{totalProductsThisMonth}</h3>
+                    <span className={percentProductChange >= 0 ? "success" : "danger"}>
+                      {percentProductText}
+                    </span>
                   </div>
                   <div className="card">
-                    <p>Tổng sản phẩm</p>
-                    <h3>24</h3>
-                    <span className="success">↑ 0% so với tháng trước</span>
+                    <p>Tổng người dùng đã thuê tháng {selectedMonth}</p>
+                    <h3>{totalCustomersThisMonth}</h3>
+                    <span className={percentCustomerChange >= 0 ? "success" : "danger"}>
+                      {percentCustomerText}
+                    </span>
                   </div>
                   <div className="card">
-                    <p>Tổng người dùng</p>
-                    <h3>3</h3>
-                    <span className="success">↑ 0% so với tháng trước</span>
+                    <p>Tổng số giờ thuê tháng {selectedMonth}</p>
+                    <h3>{totalHoursThisMonth}</h3>
+                    <span className={percentHoursChange >= 0 ? "success" : "danger"}>
+                      {percentHoursText}
+                    </span>
                   </div>
                 </div>
 
                 {/* Charts */}
                 <div className="charts">
                   <div className="chart-box">
-                    <h4>Biểu đồ doanh thu</h4>
+                    <h4>Biểu đồ đơn thuê</h4>
                     <ResponsiveContainer width="100%" height={300}>
-                      <LineChart data={revenueData}>
+                      <LineChart data={orderReview}>
                         <CartesianGrid stroke="#ccc" />
                         <XAxis dataKey="month" />
                         <YAxis />
                         <Tooltip />
-                        <Line type="monotone" dataKey="revenue" stroke="#8884d8" />
+                        <Line
+                          type="monotone"
+                          dataKey="order"
+                          stroke="#8884d8"
+                        />
                       </LineChart>
                     </ResponsiveContainer>
                     <button className="report-btn">Xuất báo cáo</button>
@@ -170,7 +311,7 @@ function AdminDashboard() {
             }
           />
           <Route path="/products" element={<Products />} />
-          <Route path="/orders" element={<Orders />} />
+          <Route path="/orders" element={<CustomerOrders />} />
           <Route path="/users" element={<UsersManager />} />
           <Route path="/categories" element={<Categories />} />
         </Routes>
