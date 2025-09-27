@@ -36,6 +36,7 @@ import MyCarsBooking from './pages/MyCarsBooking'
 import MyCarsNotBooking from './pages/MyCarsNotBooking'
 import Revenue from './components/home/Customer/Revenue/Revenue'
 import UsersManager from './admin/UsersManager'
+import PaymentReturn from './pages/PaymentReturn'
 function App() {
   return (
     <BrowserRouter>
@@ -67,6 +68,7 @@ function App() {
           <Route path="forgot-password" element={<ForgotPassword />} />
           <Route path="not-found" element={<NotFound />} />
           <Route path="/reports/revenue" element={<ProtectedRoute><Revenue /></ProtectedRoute>} />
+          <Route path="payment-return" element={<ProtectedRoute><PaymentReturn /></ProtectedRoute>} />
         </Route>
 
         {/* Admin */}
