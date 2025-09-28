@@ -46,7 +46,7 @@ export default function MyWallet() {
                     <p className="col-md-6 mb-3 fw-bold order-md-1">Your current balance:</p>
                 </div>
                 <div className="row current-balance mb-3">
-                    <div className="col-12 fs-2 text-success">{currencyFormat(wallet , 'VND', false)} VND</div>
+                    <div className="col-12 fs-2 text-success">{currencyFormat(wallet * MULTIPLIED_AMOUNT, 'VND', false)} VND</div>
                 </div>
                 <Transactions />
             </div>
