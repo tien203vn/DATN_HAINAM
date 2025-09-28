@@ -4,12 +4,15 @@ import axiosInstance from '../utils/authorizedAxios'
 import { API_URL } from '../constants/apiUrl'
 
 export const getCarsByOwner = async ({
-  page = 1,
-  size = 5,
-  sort = 'id:desc',
-  keyword // thêm keyword vào destructuring
+  currentPage = 1,
+  pageSize = 5,
+  sortField = 'id',
+  sortDir = 'desc',
+  keyword
 }) => {
-  const searchParams = generateMetaSearchParams(page, size, sort);
+  // Tạo sort string từ sortField và sortDir
+  const sort = `${sortField}:${sortDir}`;
+  const searchParams = generateMetaSearchParams(currentPage, pageSize, sort);
   // Thêm keyword vào query string nếu có
   const keywordParam = keyword !== undefined ? `&keyword=${keyword}` : '';
   const res = await axiosInstance.get(`car/my-car?${searchParams}${keywordParam}`);
@@ -78,3 +81,10 @@ export const stopRentingApi = async (id) => {
   const res = await axiosInstance.patch(`car/stop-renting-car/${id}`)
   return res.data
 }
+
+export const rentingCarApi = async (id) => {
+  const res = await axiosInstance.patch(`car/renting-car/${id}`)
+  return res.data
+}
+
+// Cần xem code của hàm getCarsByOwner để debug

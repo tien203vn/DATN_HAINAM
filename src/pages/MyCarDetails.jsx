@@ -10,7 +10,7 @@ import BasicInformationTab from '../components/my-cars/BasicInfomationTab'
 import DetailsTab from '../components/my-cars/DetailsTab'
 import PricingTab from '../components/my-cars/PricingTab'
 import StarRating from '../components/StarRating'
-import { getCarsById, stopRentingApi } from '../shared/apis/carApi'
+import { getCarsById, stopRentingApi, rentingCarApi } from '../shared/apis/carApi'
 import { MULTIPLIED_AMOUNT } from '../shared/constants'
 import { currencyFormat } from '../shared/utils'
 import CarBookingsTab from '../components/my-cars/CarBookingTab'
@@ -27,7 +27,14 @@ export default function MyCarDetails() {
     const { message } = await stopRentingApi(carId)
     toast.success(message)
     setStopRentingModal(false)
-    navigate('/my-cars-not-active')
+    navigate('/my-cars')
+  }
+
+  const handleReRentingCar = async () => {
+    const { message } = await rentingCarApi(carId)
+    toast.success(message)
+    setReRentingModal(false)
+    navigate('/my-cars')
   }
 
   useEffect(() => {
@@ -115,20 +122,24 @@ export default function MyCarDetails() {
                       <div className="col-8">
                         <span
                           className={
-                            car?.isStopped ? 'text-danger' : 'text-success'
+                            +car?.isAvailable === 1
+                              ? 'text-success'
+                              : +car?.isAvailable === 0
+                              ? 'text-warning'
+                              : 'text-muted'
                           }
                         >
-                          {car?.isStopped
-                            ? 'Stopped'
-                            : car?.isAvailable
+                          {+car?.isAvailable === 1
                             ? 'Available'
-                            : 'Unavailable'}
+                            : +car?.isAvailable === 0
+                            ? 'Unavailable'
+                            : 'Unknown'}
                         </span>
                       </div>
                     </div>
                   </div>
                   <div className="col-md-4 col-lg-3">
-                    {!car?.isStopped ? (
+                    {+car?.isAvailable === 1 ? (
                       <button
                         type="button"
                         className="btn btn-primary w-100 mb-3"
@@ -136,13 +147,21 @@ export default function MyCarDetails() {
                       >
                         Stop renting
                       </button>
-                    ) : (
+                    ) : +car?.isAvailable === 0 ? (
                       <button
                         type="button"
                         className="btn btn-primary w-100 mb-3"
                         onClick={() => setReRentingModal(true)}
                       >
                         Re-renting
+                      </button>
+                    ) : (
+                      <button
+                        type="button"
+                        className="btn btn-secondary w-100 mb-3"
+                        disabled
+                      >
+                        Unknown status
                       </button>
                     )}
                   </div>
@@ -272,7 +291,7 @@ export default function MyCarDetails() {
       <ConfirmModal
         show={showReRentingModal}
         onClose={() => setReRentingModal(false)}
-        onConfirm={handleStopRentingCar}
+        onConfirm={handleReRentingCar}
         message="Re-renting car?"
         title="Re-renting"
         car={car}

@@ -64,7 +64,7 @@ export default function MyCars() {
 
     setLoading(true)
     getCarsByOwner({
-      currentPage: currentPage - 1, // backend thường bắt đầu từ 0
+      currentPage: currentPage, // Không trừ 1 nữa, gửi trực tiếp currentPage
       pageSize: perPage,
       sortField,
       sortDir,
@@ -74,13 +74,14 @@ export default function MyCars() {
         setCars(data.data)
         const meta = data.meta
         if (meta.totalPages !== total) setTotal(meta.totalPages)
-        if (meta.currentPage + 1 !== currentPage)
-          setCurrentPage(meta.currentPage + 1)
+        // Bỏ dòng này để không can thiệp vào currentPage
+        // if (meta.currentPage + 1 !== currentPage)
+        //   setCurrentPage(meta.currentPage + 1)
       })
       .finally(() => {
         setLoading(false)
       })
-  }, [currentPage, perPage, sortType, total, availability])
+  }, [currentPage, perPage, sortType, availability]) // Bỏ total khỏi dependency
 
   useEffect(() => {
     fetchData()

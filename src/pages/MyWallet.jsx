@@ -14,11 +14,15 @@ export default function MyWallet() {
     const [showWD, setShowWD] = useState(false);
     const [showTU, setShowTU] = useState(false);
 
-    useEffect(() => {
+    const fetchWalletBalance = () => {
         getMyWalletApi().then(data => {
             const resData = data?.data
             setWallet(resData?.wallet ?? 0)
         })
+    }
+
+    useEffect(() => {
+        fetchWalletBalance()
     }, [])
 
     return (
@@ -42,12 +46,19 @@ export default function MyWallet() {
                     <p className="col-md-6 mb-3 fw-bold order-md-1">Your current balance:</p>
                 </div>
                 <div className="row current-balance mb-3">
-                    <div className="col-12 fs-2 text-success">{currencyFormat(wallet * MULTIPLIED_AMOUNT, 'VND', false)} VND</div>
+                    <div className="col-12 fs-2 text-success">{currencyFormat(wallet , 'VND', false)} VND</div>
                 </div>
                 <Transactions />
             </div>
             <WithdrawModal currentBalance={wallet} show={showWD} onClose={() => setShowWD(false)}/>
-            <TopUpModal currentBalance={wallet} show={showTU} onClose={() => setShowTU(false)}/>
+            <TopUpModal 
+                currentBalance={wallet} 
+                show={showTU} 
+                onClose={() => {
+                    setShowTU(false)
+                    fetchWalletBalance() // Refresh wallet balance sau khi đóng modal
+                }}
+            />
         </>
     )
 }

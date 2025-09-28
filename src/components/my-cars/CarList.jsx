@@ -44,11 +44,12 @@ export default function CarList({ cars = [] }) {
             <div className="row mb-2 mb-md-0 fw-semibold">
               <div className="col-4">Status: </div>
               <div className="col-8">
-                {item?.isAvailable && !item?.isStopped && (
+                {+item?.isAvailable === 1 ? (
                   <span className="text-success">Available</span>
-                )}
-                {item?.isStopped && (
-                  <span className="text-danger">Stopped</span>
+                ) : +item?.isAvailable === 0 ? (
+                  <span className="text-warning">Unavailable</span>
+                ) : (
+                  <span className="text-muted">Unknown</span>
                 )}
               </div>
             </div>
