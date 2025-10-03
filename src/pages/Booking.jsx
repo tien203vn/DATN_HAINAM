@@ -141,6 +141,23 @@ export default function Booking() {
         }
     }, [startDate, endDate, startTime]);
 
+    // Validation thời gian
+    const isTimeValid = () => {
+        const now = dayjs();
+        
+        // Kiểm tra thời gian bắt đầu không được nhỏ hơn thời gian hiện tại
+        if (selectedStart.isBefore(now)) {
+            return false;
+        }
+        
+        // Kiểm tra thời gian kết thúc phải lớn hơn thời gian bắt đầu
+        if (selectedEnd.isBefore(selectedStart) || selectedEnd.isSame(selectedStart)) {
+            return false;
+        }
+        
+        return true;
+    };
+
     return (
         <>
             <BreadCrumb links={[
@@ -197,6 +214,12 @@ export default function Booking() {
                                 />
                             </li>
                         </ul>
+                        {!isTimeValid() && (
+                            <div className="alert alert-warning" role="alert">
+                                <strong>⚠️ Lưu ý:</strong> Thời gian thuê xe không hợp lệ. 
+                                Thời gian bắt đầu phải lớn hơn thời gian hiện tại và thời gian kết thúc phải sau thời gian bắt đầu.
+                            </div>
+                        )}
                     </div>
                 </div>
             }
@@ -271,7 +294,7 @@ export default function Booking() {
                     </div>
                 </div>
             }
-            {currentStep == 1 && <BookingStep1 onCancel={handleCancel} onNextStep={nextStep}/>}
+            {currentStep == 1 && <BookingStep1 isTimeValid={isTimeValid()} onCancel={handleCancel} onNextStep={nextStep}/>}
 
             {currentStep == 2 && (
                 <BookingStep2

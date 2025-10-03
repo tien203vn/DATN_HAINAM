@@ -11,7 +11,7 @@ const formatDate = (date) => {
   return `${year}-${month}-${day}`
 }
 
-export default function BookingStep1({ onCancel, onNextStep }) {
+export default function BookingStep1({ isTimeValid = true, onCancel, onNextStep }) {
   const {
     register,
     handleSubmit,
@@ -511,7 +511,12 @@ export default function BookingStep1({ onCancel, onNextStep }) {
             >
               Cancel
             </button>
-            <button className={clsx('btn btn-primary px-4')} type="submit">
+            <button 
+              className={clsx('btn btn-primary px-4')} 
+              type="submit"
+              disabled={!isTimeValid}
+              title={!isTimeValid ? 'Vui lòng chọn thời gian hợp lệ' : ''}
+            >
               Next
             </button>
           </div>
