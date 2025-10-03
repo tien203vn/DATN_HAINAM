@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Table, Button, Input, Space, Tag, Avatar } from "antd";
+import { Table, Button, Input, Space, Tag, Avatar, Modal, message } from "antd";
 import { PlusOutlined, SearchOutlined, FilterOutlined, EditOutlined, DeleteOutlined, EyeOutlined } from "@ant-design/icons";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import axiosInstance from "../../shared/utils/authorizedAxios";
@@ -13,6 +13,8 @@ const Products = () => {
   const [meta, setMeta] = useState({});
   const [currentPage, setCurrentPage] = useState(parseInt(searchParams.get('currentPage')) || 1);
   const [pageSize, setPageSize] = useState(parseInt(searchParams.get('size')) || 10);
+  const [deleteModalVisible, setDeleteModalVisible] = useState(false);
+  const [carToDelete, setCarToDelete] = useState(null);
   const navigate = useNavigate();
 
   const updateUrlParams = (params) => {
@@ -81,6 +83,35 @@ const Products = () => {
     navigate(`/my-cars/${carId}`);
   };
 
+  const handleDeleteClick = (car) => {
+    setCarToDelete(car);
+    setDeleteModalVisible(true);
+  };
+
+  const handleDeleteConfirm = async () => {
+    if (!carToDelete) return;
+    
+    try {
+      await axiosInstance.delete(`/car/delete/${carToDelete.id}`);
+      message.success(`Xe "${carToDelete.name}" đã được xóa thành công!`);
+      
+      // Refresh the car list
+      fetchCars();
+      
+      // Close modal
+      setDeleteModalVisible(false);
+      setCarToDelete(null);
+    } catch (error) {
+      console.error("Error deleting car:", error);
+      message.error("Có lỗi xảy ra khi xóa xe. Vui lòng thử lại!");
+    }
+  };
+
+  const handleDeleteCancel = () => {
+    setDeleteModalVisible(false);
+    setCarToDelete(null);
+  };
+
   const columns = [
     {
       title: "",
@@ -132,11 +163,11 @@ const Products = () => {
           ) : (
             <Tag color="red">Ngừng hoạt động</Tag>
           )}
-          {record.isAvailable ? (
+          {/* {record.isAvailable ? (
             <Tag color="blue">Có sẵn</Tag>
           ) : (
             <Tag color="orange">Đang thuê</Tag>
-          )}
+          )} */}
           {record.isStopped && <Tag color="volcano">Tạm dừng</Tag>}
         </Space>
       ),
@@ -151,8 +182,14 @@ const Products = () => {
             onClick={() => handleViewDetail(record.id)}
             title="Xem chi tiết"
           />
-          <Button type="default" icon={<EditOutlined />} title="Chỉnh sửa" />
-          <Button type="primary" danger icon={<DeleteOutlined />} title="Xóa" />
+          {/* <Button type="default" icon={<EditOutlined />} title="Chỉnh sửa" /> */}
+          <Button 
+            type="primary" 
+            danger 
+            icon={<DeleteOutlined />} 
+            title="Xóa"
+            onClick={() => handleDeleteClick(record)}
+          />
         </Space>
       ),
     },
@@ -206,6 +243,24 @@ const Products = () => {
         }}
         scroll={{ x: true }}
       />
+
+      {/* Modal xác nhận xóa */}
+      <Modal
+        title="Xác nhận xóa xe"
+        open={deleteModalVisible}
+        onOk={handleDeleteConfirm}
+        onCancel={handleDeleteCancel}
+        okText="Xóa"
+        cancelText="Hủy"
+        okButtonProps={{ danger: true }}
+      >
+        <p>
+          Bạn có chắc chắn muốn xóa xe <strong>&ldquo;{carToDelete?.name}&rdquo;</strong> không?
+        </p>
+        <p style={{ color: '#ff4d4f', fontSize: '14px' }}>
+          ⚠️ Hành động này không thể hoàn tác. Xe sẽ bị xóa vĩnh viễn khỏi hệ thống và chủ xe sẽ nhận được email thông báo.
+        </p>
+      </Modal>
     </div>
   );
 };
